@@ -1,0 +1,161 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Ayuda</h1>
+    <p class="page-subtitle">Encuentra respuestas y soporte para el sistema</p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="help-hero">
+    <div class="help-hero__title">¿En qué podemos ayudarte?</div>
+    <div class="help-hero__subtitle">Busca entre nuestras guías o contacta al equipo de soporte</div>
+    <div class="help-hero__search">
+      <input type="text" class="help-hero__search-input" placeholder="Buscar tema de ayuda...">
+      <button class="help-hero__search-btn">
+        <lucide-icon [img]="Search" size="16"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="BookOpen" size="16"></lucide-icon></div>
+        Guías rápidas
+      </div>
+    </div>
+    <div class="guide-grid">
+      <div class="guide-card">
+        <div class="guide-card__icon guide-card__icon--yellow">
+          <lucide-icon [img]="ClipboardList" size="20"></lucide-icon>
+        </div>
+        <div>
+          <div class="guide-card__title">Gestión de solicitudes</div>
+          <div class="guide-card__desc">Aprende a aceptar, rechazar y gestionar solicitudes de préstamo</div>
+        </div>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card__icon guide-card__icon--teal">
+          <lucide-icon [img]="Box" size="20"></lucide-icon>
+        </div>
+        <div>
+          <div class="guide-card__title">Administrar inventario</div>
+          <div class="guide-card__desc">Agrega, edita y actualiza el estado de los dispositivos del laboratorio</div>
+        </div>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card__icon guide-card__icon--orange">
+          <lucide-icon [img]="Users" size="20"></lucide-icon>
+        </div>
+        <div>
+          <div class="guide-card__title">Gestión de usuarios</div>
+          <div class="guide-card__desc">Consulta, suspende y gestiona los perfiles de usuarios del sistema</div>
+        </div>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card__icon guide-card__icon--bright">
+          <lucide-icon [img]="Calendar" size="20"></lucide-icon>
+        </div>
+        <div>
+          <div class="guide-card__title">Crear eventos</div>
+          <div class="guide-card__desc">Cómo programar eventos y asignar equipos desde el calendario</div>
+        </div>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card__icon guide-card__icon--dark">
+          <lucide-icon [img]="BarChart3" size="20"></lucide-icon>
+        </div>
+        <div>
+          <div class="guide-card__title">Analíticos y reportes</div>
+          <div class="guide-card__desc">Interpreta las gráficas de uso y genera reportes semanales</div>
+        </div>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card__icon guide-card__icon--yellow">
+          <lucide-icon [img]="Settings" size="20"></lucide-icon>
+        </div>
+        <div>
+          <div class="guide-card__title">Configuración del sistema</div>
+          <div class="guide-card__desc">Guía para ajustar permisos, tiempos de préstamo y notificaciones</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="MessageCircleQuestion" size="16"></lucide-icon></div>
+        Preguntas frecuentes
+      </div>
+    </div>
+
+    <div class="faq-item" style="border-bottom: 1px solid #F0F0F0; padding: 14px 0; cursor: pointer;">
+      <div style="font-weight: 600; font-size: 14px;">¿Cómo apruebo un préstamo extendido?</div>
+      <div class="settings-row__desc" style="margin-top: 6px;">
+        Ve a <strong>Solicitudes</strong> y desplázate hasta "Préstamo Extendido". Verifica que el solicitante tenga perfil de <strong>Programador</strong>, luego haz clic en ✓. Puedes revisar el motivo con "Ver motivo".
+      </div>
+    </div>
+
+    <div class="faq-item" style="border-bottom: 1px solid #F0F0F0; padding: 14px 0;">
+      <div style="font-weight: 600; font-size: 14px;">¿Qué significa el estado "Prestado" en inventario?</div>
+      <div class="settings-row__desc" style="margin-top: 6px;">
+        Indica que el equipo salió del laboratorio bajo un préstamo formal aprobado. Es diferente a "En uso", que indica uso dentro del laboratorio.
+      </div>
+    </div>
+
+    <div class="faq-item" style="border-bottom: 1px solid #F0F0F0; padding: 14px 0;">
+      <div style="font-weight: 600; font-size: 14px;">¿Cómo suspendo a un usuario?</div>
+      <div class="settings-row__desc" style="margin-top: 6px;">
+        Ve a <strong>Usuarios</strong>, localiza al usuario y haz clic en editar. Cambia su estado a "Suspendido". El usuario no podrá realizar nuevas solicitudes.
+      </div>
+    </div>
+
+    <div class="faq-item" style="padding: 14px 0;">
+      <div style="font-weight: 600; font-size: 14px;">¿Cómo agrego un nuevo dispositivo?</div>
+      <div class="settings-row__desc" style="margin-top: 6px;">
+        En <strong>Inventario</strong>, haz clic en "+ Agregar dispositivo". Completa el formulario y guarda. Aparecerá inmediatamente en la tabla.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="Headphones" size="16"></lucide-icon></div>
+        Contacto y soporte
+      </div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-card__icon contact-card__icon--blue">
+          <lucide-icon [img]="Mail" size="22"></lucide-icon>
+        </div>
+        <div>
+          <div class="contact-card__title">Correo de soporte</div>
+          <div class="contact-card__detail">soporte.stem&#64;udlap.mx</div>
+          <div class="contact-card__detail">Respuesta en 24 hrs hábiles</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card__icon contact-card__icon--green">
+          <lucide-icon [img]="Phone" size="22"></lucide-icon>
+        </div>
+        <div>
+          <div class="contact-card__title">Teléfono de soporte</div>
+          <div class="contact-card__detail">+52 (222) 229-2000 ext. 8400</div>
+          <div class="contact-card__detail">Lun – Vie, 9:00 a.m. – 6:00 p.m.</div>
+        </div>
+      </div>
+    </div>
+    <div style="background: rgba(255,149,0,0.08); border-left: 3px solid var(--orange-bright);
+                border-radius: 8px; padding: 12px 16px; margin-top: 16px;
+                display: flex; align-items: center; gap: 10px; font-size: 13px;">
+      <lucide-icon [img]="Info" size="16"></lucide-icon>
+      Para reportar un error crítico, contacta al equipo de TI con el asunto
+      <strong>"iOS Lab – Error crítico"</strong>.
+    </div>
+  </div>
+
+</div>

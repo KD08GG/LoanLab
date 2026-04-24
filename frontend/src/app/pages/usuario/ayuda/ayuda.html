@@ -1,0 +1,122 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Ayuda</h1>
+    <p class="page-subtitle">Encuentra respuestas y soporte para el sistema</p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="help-hero">
+    <div class="help-hero__title">¿En qué podemos ayudarte?</div>
+    <div class="help-hero__subtitle">Busca entre nuestras guías o contacta al equipo de soporte</div>
+    <div class="help-hero__search">
+      <input type="text" class="help-hero__search-input" [(ngModel)]="searchQuery" placeholder="Buscar tema de ayuda..." (keyup.enter)="buscar()">
+      <button class="help-hero__search-btn" (click)="buscar()">
+        <lucide-icon [img]="Monitor" size="18"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Guías -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="BookOpen" size="16"></lucide-icon></div>
+        Guías rápidas
+      </div>
+    </div>
+    <div class="guide-grid">
+      <div class="guide-card" (click)="abrirGuia('Hacer una solicitud')">
+        <div class="guide-card__icon guide-card__icon--yellow"><lucide-icon [img]="ClipboardList" size="20"></lucide-icon></div>
+        <div>
+          <div class="guide-card__title">Hacer una solicitud</div>
+          <div class="guide-card__desc">Aprende a solicitar un equipo disponible del laboratorio</div>
+        </div>
+      </div>
+      <div class="guide-card" (click)="abrirGuia('Ver dispositivos')">
+        <div class="guide-card__icon guide-card__icon--teal"><lucide-icon [img]="Monitor" size="20"></lucide-icon></div>
+        <div>
+          <div class="guide-card__title">Ver dispositivos</div>
+          <div class="guide-card__desc">Cómo explorar el catálogo y filtrar por tipo de equipo</div>
+        </div>
+      </div>
+      <div class="guide-card" (click)="abrirGuia('Mis reservas')">
+        <div class="guide-card__icon guide-card__icon--bright"><lucide-icon [img]="Calendar" size="20"></lucide-icon></div>
+        <div>
+          <div class="guide-card__title">Mis reservas</div>
+          <div class="guide-card__desc">Consulta y gestiona tus reservas desde el calendario</div>
+        </div>
+      </div>
+      <div class="guide-card" (click)="abrirGuia('Analíticos personales')">
+        <div class="guide-card__icon guide-card__icon--dark"><lucide-icon [img]="BarChart3" size="20"></lucide-icon></div>
+        <div>
+          <div class="guide-card__title">Analíticos personales</div>
+          <div class="guide-card__desc">Interpreta tus estadísticas de uso del laboratorio</div>
+        </div>
+      </div>
+      <div class="guide-card" (click)="abrirGuia('Configurar cuenta')">
+        <div class="guide-card__icon guide-card__icon--orange"><lucide-icon [img]="Settings" size="20"></lucide-icon></div>
+        <div>
+          <div class="guide-card__title">Configurar cuenta</div>
+          <div class="guide-card__desc">Cambia tu contraseña y preferencias de notificaciones</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="MessageCircleQuestion" size="16"></lucide-icon></div>
+        Preguntas frecuentes
+      </div>
+    </div>
+    <details class="faq-item">
+      <summary>¿Cuánto tiempo puedo tener un equipo prestado? <lucide-icon [img]="ChevronDown" size="16"></lucide-icon></summary>
+      <div class="faq-item__answer">El tiempo máximo de préstamo normal es de 4 horas. Si necesitas más tiempo, puedes solicitar un préstamo extendido, el cual debe ser aprobado por el administrador.</div>
+    </details>
+    <details class="faq-item">
+      <summary>¿Cómo sé si mi solicitud fue aprobada? <lucide-icon [img]="ChevronDown" size="16"></lucide-icon></summary>
+      <div class="faq-item__answer">Recibirás una notificación cuando el administrador o encargado revise tu solicitud. También puedes revisar el estado en la sección de Solicitudes en cualquier momento.</div>
+    </details>
+    <details class="faq-item">
+      <summary>¿Qué hago si el equipo tiene un problema? <lucide-icon [img]="ChevronDown" size="16"></lucide-icon></summary>
+      <div class="faq-item__answer">Reporta inmediatamente el problema al encargado del laboratorio. No intentes reparar el equipo. El equipo será marcado como en Mantenimiento y se gestionará su revisión.</div>
+    </details>
+  </div>
+
+  <!-- Contacto -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="Headphones" size="16"></lucide-icon></div>
+        Contacto y soporte
+      </div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-card__icon contact-card__icon--blue"><lucide-icon [img]="Mail" size="22"></lucide-icon></div>
+        <div>
+          <div class="contact-card__title">Correo de soporte</div>
+          <div class="contact-card__detail">soporte.stem&#64;udlap.mx</div>
+          <div class="contact-card__detail">Respuesta en 24 hrs hábiles</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card__icon contact-card__icon--green"><lucide-icon [img]="Phone" size="22"></lucide-icon></div>
+        <div>
+          <div class="contact-card__title">Teléfono de soporte</div>
+          <div class="contact-card__detail">+52 (222) 229-2000 ext. 8400</div>
+          <div class="contact-card__detail">Lun – Vie, 9:00 a.m. – 6:00 p.m.</div>
+        </div>
+      </div>
+    </div>
+    <div class="info-banner info-banner--orange" style="margin-top:16px;">
+      <lucide-icon [img]="Info" size="16"></lucide-icon>
+      Para reportar un problema urgente, ve directamente al laboratorio o llama al número de soporte.
+    </div>
+  </div>
+
+</div>

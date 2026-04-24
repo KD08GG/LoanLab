@@ -1,0 +1,524 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Solicitudes</h1>
+    <p class="page-subtitle">Estas son tus solicitudes</p>
+  </div>
+  <div class="page-header__actions">
+    <button class="btn-with-icon" (click)="abrirModalSolicitud()">
+      <div class="btn-icon-slot"><lucide-icon [img]="Plus" size="16"></lucide-icon></div>
+      Agregar solicitud
+    </button>
+  </div>
+</div>
+
+<div class="page-body">
+
+  @if (mensaje) {
+    <div [style.background]="mensajeTipo === 'success' ? 'rgba(34,197,94,0.1)' : mensajeTipo === 'error' ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)'"
+      [style.border-left]="'3px solid ' + (mensajeTipo === 'success' ? '#22c55e' : mensajeTipo === 'error' ? '#ef4444' : '#3b82f6')"
+      style="border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+      {{ mensaje }}
+    </div>
+  }
+
+  <div class="tab-bar">
+    <button class="tab-pill" [class.active]="tabActivo === 'todas'"
+      (click)="cambiarTab('todas')">Todas</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'aprobada'"
+      (click)="cambiarTab('aprobada')">Aceptadas</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'pendiente'"
+      (click)="cambiarTab('pendiente')">Revisión</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'rechazada'"
+      (click)="cambiarTab('rechazada')">Rechazadas</button>
+  </div>
+
+  @if (error) {
+    <div class="card" style="text-align: center; padding: 40px; color: var(--orange);">
+      No se pudo conectar con la API.
+    </div>
+  } @else {
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TABLA 1: PRÉSTAMOS (tabla de Movimientos intercambiada)
+         Muestra los préstamos activos/vencidos con su estado de equipo
+    ════════════════════════════════════════════════════════════════ -->
+    <div style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+      Préstamos
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Persona</th>
+              <th>N° Serie</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Estado de solicitud</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of movimientosActuales; track p.id_prestamo) {
+              <tr>
+                <td>
+                  <div class="cell-with-icon">
+                    <div class="cell-icon">
+                      <lucide-icon [img]="obtenerIconoEquipo(getEquipo(p.id_equipo)?.nombre_equipo || '')" size="16"></lucide-icon>
+                    </div>
+                    <div class="cell-device">
+                      <span class="cell-device__name">
+                        {{ getUsuario(p.id_usuario)?.nombre_usuario || '-' }}
+                        — {{ getEquipo(p.id_equipo)?.nombre_equipo || '-' }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">{{ getEquipo(p.id_equipo)?.num_serie || '-' }}</td>
+                <td class="text-muted">{{ formatearFecha(p.fecha_inicio) }}</td>
+                <td>
+                  <div style="display: flex; flex-direction: column; gap: 2px; font-size: 12px;">
+                    <span>{{ formatearHora(p.fecha_inicio) }}</span>
+                    <span class="text-muted">{{ formatearHora(p.fecha_fin) }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span [class]="obtenerClaseBadgePrestamo(p.estado_prestamo)">
+                    {{ p.estado_prestamo || '-' }}
+                  </span>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  {{ cargando ? 'Cargando...' : 'Sin préstamos activos.' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TABLA 2: SOLICITUDES (tabla original filtrada por tabs)
+    ════════════════════════════════════════════════════════════════ -->
+    <div class="card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dispositivos</th>
+              <th>Usuario</th>
+              <th>ID</th>
+              <th>Programa</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of solicitudesFiltradas; track s.id_solicitud) {
+              <tr>
+                <td>
+                  <div class="cell-with-icon">
+                    <div class="cell-icon">
+                      <lucide-icon [img]="obtenerIconoEquipo(getEquipo(s.id_equipo)?.nombre_equipo || '')" size="16"></lucide-icon>
+                    </div>
+                    <div class="cell-device">
+                      <span class="cell-device__name">{{ getEquipo(s.id_equipo)?.nombre_equipo || '-' }}</span>
+                      <span class="cell-device__id">{{ getEquipo(s.id_equipo)?.num_serie || '-' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ getUsuario(s.id_usuario_solicita)?.nombre_usuario || '-' }}</td>
+                <td class="text-muted">{{ getUsuario(s.id_usuario_solicita)?.id_usuario || '-' }}</td>
+                <td>{{ s.grupo_solicitud || getUsuario(s.id_usuario_solicita)?.programa || '-' }}</td>
+                <td class="text-muted">{{ formatearFecha(s.fecha_solicitud) }}</td>
+                <td>
+                  <div class="action-btns">
+                    <span [class]="obtenerClaseBadge(s.estado_solicitud)">
+                      {{ s.estado_solicitud || 'Pendiente' }}
+                    </span>
+                    @if (esPendiente(s)) {
+                      <button class="btn-action btn-action--reject" (click)="rechazar(s.id_solicitud)">✕</button>
+                      <button class="btn-action btn-action--accept" (click)="aprobar(s.id_solicitud)">✓</button>
+                    }
+                    @if (s.motivo) {
+                      <a class="link-text" (click)="verMotivo(s.motivo)" style="cursor: pointer;">Ver motivo</a>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  {{ cargando ? 'Cargando solicitudes...' : 'No hay solicitudes.' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TABLA 3: PRÉSTAMO POR EVENTO
+    ════════════════════════════════════════════════════════════════ -->
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">Préstamo por evento</div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dispositivos</th>
+              <th>Usuario</th>
+              <th>ID</th>
+              <th>Programa</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of solicitudesEvento; track s.id_solicitud) {
+              <tr>
+                <td>
+                  <div class="cell-with-icon">
+                    <div class="cell-icon">
+                      <lucide-icon [img]="obtenerIconoEquipo(getEquipo(s.id_equipo)?.nombre_equipo || '')" size="16"></lucide-icon>
+                    </div>
+                    <div class="cell-device">
+                      <span class="cell-device__name">{{ getEquipo(s.id_equipo)?.nombre_equipo || '-' }}</span>
+                      <span class="cell-device__id">{{ getEquipo(s.id_equipo)?.num_serie || '-' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ getUsuario(s.id_usuario_solicita)?.nombre_usuario || '-' }}</td>
+                <td class="text-muted">{{ getUsuario(s.id_usuario_solicita)?.id_usuario || '-' }}</td>
+                <td>{{ s.grupo_solicitud || '-' }}</td>
+                <td class="text-muted">{{ formatearFecha(s.fecha_solicitud) }}</td>
+                <td>
+                  <div class="action-btns">
+                    <span [class]="obtenerClaseBadge(s.estado_solicitud)">
+                      {{ s.estado_solicitud || 'Pendiente' }}
+                    </span>
+                    @if (esPendiente(s)) {
+                      <button class="btn-action btn-action--reject" (click)="rechazar(s.id_solicitud)">✕</button>
+                      <button class="btn-action btn-action--accept" (click)="aprobar(s.id_solicitud)">✓</button>
+                    }
+                    @if (s.motivo) {
+                      <a class="link-text" (click)="verMotivo(s.motivo)" style="cursor: pointer;">Ver motivo</a>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  Sin préstamos por evento.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TABLA 4: PRÉSTAMO EXTENDIDO
+    ════════════════════════════════════════════════════════════════ -->
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">
+          Préstamo Extendido
+          <span class="badge badge--orange" style="font-size: 12px;">Solo programadores</span>
+        </div>
+      </div>
+      <div style="background: rgba(244,91,34,0.07); border-left: 3px solid var(--orange);
+        border-radius: 8px; padding: 10px 14px; font-size: 13px;
+        color: var(--text-secondary); margin-bottom: 14px;">
+        Los préstamos extendidos aplican únicamente para estudiantes con perfil de
+        <strong>Programador</strong>. Verifica el programa antes de aprobar.
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dispositivos</th>
+              <th>Usuario</th>
+              <th>ID</th>
+              <th>Programa</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of solicitudesExtendidas; track s.id_solicitud) {
+              <tr>
+                <td>
+                  <div class="cell-with-icon">
+                    <div class="cell-icon">
+                      <lucide-icon [img]="obtenerIconoEquipo(getEquipo(s.id_equipo)?.nombre_equipo || '')" size="16"></lucide-icon>
+                    </div>
+                    <div class="cell-device">
+                      <span class="cell-device__name">{{ getEquipo(s.id_equipo)?.nombre_equipo || '-' }}</span>
+                      <span class="cell-device__id">{{ getEquipo(s.id_equipo)?.num_serie || '-' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ getUsuario(s.id_usuario_solicita)?.nombre_usuario || '-' }}</td>
+                <td class="text-muted">{{ getUsuario(s.id_usuario_solicita)?.id_usuario || '-' }}</td>
+                <td>{{ s.grupo_solicitud || '-' }}</td>
+                <td class="text-muted">{{ formatearFecha(s.fecha_solicitud) }}</td>
+                <td>
+                  <div class="action-btns">
+                    <span [class]="obtenerClaseBadge(s.estado_solicitud)">
+                      {{ s.estado_solicitud || 'Pendiente' }}
+                    </span>
+                    @if (esPendiente(s)) {
+                      <button class="btn-action btn-action--reject" (click)="rechazar(s.id_solicitud)">✕</button>
+                      <button class="btn-action btn-action--accept" (click)="aprobar(s.id_solicitud)">✓</button>
+                    }
+                    @if (s.motivo) {
+                      <a class="link-text" (click)="verMotivo(s.motivo)" style="cursor: pointer;">Ver motivo</a>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  Sin préstamos extendidos.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  }
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL: AGREGAR SOLICITUD
+     - Dropdown Grupo/Programa (STEM / Honores / Servicio Social)
+     - Pares usuario↔equipo dinámicos (botón para agregar más)
+     - Campos obligatorios se ponen en rojo si se intenta guardar vacíos
+════════════════════════════════════════════════════════════════════ -->
+@if (mostrarModalSolicitud) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 540px; max-width: 90vw; max-height: 90vh; overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="font-size: 20px; font-weight: 700;">Agregar solicitud</h2>
+        <button (click)="cerrarModalSolicitud()"
+          style="background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+
+        <!-- ── Grupo / Programa (dropdown) ── -->
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Grupo / Programa *
+          </label>
+          <select [(ngModel)]="nuevaSolicitud.grupo_solicitud"
+            [style.border-color]="campoInvalido(nuevaSolicitud.grupo_solicitud) ? '#ef4444' : '#E5E7EB'"
+            style="width: 100%; padding: 10px 14px; border-width: 1.5px; border-style: solid;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+            <option value="" disabled>Selecciona un programa</option>
+            @for (prog of PROGRAMAS; track prog) {
+              <option [value]="prog">{{ prog }}</option>
+            }
+          </select>
+          @if (campoInvalido(nuevaSolicitud.grupo_solicitud)) {
+            <span style="font-size: 12px; color: #ef4444;">Este campo es obligatorio</span>
+          }
+        </div>
+
+        <!-- ── Tipo de solicitud ── -->
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Tipo de solicitud *
+          </label>
+          <select [(ngModel)]="nuevaSolicitud.tipo_solicitud"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+            <option value="Normal">Normal</option>
+            <option value="Evento">Por evento</option>
+            <option value="Extendido">Extendido</option>
+          </select>
+        </div>
+
+        <!-- ── Pares usuario ↔ equipo ── -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+              Usuarios y equipos *
+            </label>
+            <button (click)="agregarPar()"
+              style="display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+                     background: var(--orange-bright); color: white; border: none;
+                     border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+              <lucide-icon [img]="Plus" size="14"></lucide-icon>
+              Agregar usuario
+            </button>
+          </div>
+
+          @for (par of pares; track $index) {
+            <div style="display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px;
+                        padding: 12px; border: 1.5px solid #E5E7EB; border-radius: 10px;">
+
+              <!-- Usuario -->
+              <div style="flex: 1;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Usuario</label>
+                <select [(ngModel)]="par.id_usuario"
+                  [style.border-color]="campoInvalido(par.id_usuario) ? '#ef4444' : '#E5E7EB'"
+                  style="width: 100%; padding: 8px 10px; border-width: 1.5px; border-style: solid;
+                         border-radius: 8px; font-family: var(--font); font-size: 13px;
+                         margin-top: 4px; outline: none;">
+                  <option [value]="0" disabled>Selecciona un usuario</option>
+                  @for (u of usuarios; track u.id_usuario) {
+                    <option [value]="u.id_usuario">{{ u.nombre_usuario }}</option>
+                  }
+                </select>
+                @if (campoInvalido(par.id_usuario)) {
+                  <span style="font-size: 11px; color: #ef4444;">Requerido</span>
+                }
+              </div>
+
+              <!-- Equipo -->
+              <div style="flex: 1;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Equipo</label>
+                <select [(ngModel)]="par.id_equipo"
+                  [style.border-color]="campoInvalido(par.id_equipo) ? '#ef4444' : '#E5E7EB'"
+                  style="width: 100%; padding: 8px 10px; border-width: 1.5px; border-style: solid;
+                         border-radius: 8px; font-family: var(--font); font-size: 13px;
+                         margin-top: 4px; outline: none;">
+                  <option [value]="0" disabled>Selecciona un equipo</option>
+                  @for (e of equiposDisponiblesParaPar($index); track e.id_equipo) {
+                    <option [value]="e.id_equipo">{{ e.nombre_equipo }} — {{ e.num_serie }}</option>
+                  }
+                </select>
+                @if (campoInvalido(par.id_equipo)) {
+                  <span style="font-size: 11px; color: #ef4444;">Requerido</span>
+                }
+              </div>
+
+              <!-- Botón eliminar par -->
+              @if (pares.length > 1) {
+                <button (click)="eliminarPar($index)"
+                  style="margin-top: 22px; background: none; border: none; cursor: pointer;
+                         color: #ef4444; padding: 6px;">
+                  <lucide-icon [img]="Trash2" size="16"></lucide-icon>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- ── Fechas y motivo (solo para Evento/Extendido) ── -->
+        @if (requiereFechasYMotivo) {
+          <div>
+            <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+              Fecha inicio préstamo *
+            </label>
+            <input type="datetime-local" [(ngModel)]="nuevaSolicitud.fecha_inicio_prestamo"
+              [style.border-color]="campoInvalido(nuevaSolicitud.fecha_inicio_prestamo) ? '#ef4444' : '#E5E7EB'"
+              style="width: 100%; padding: 10px 14px; border-width: 1.5px; border-style: solid;
+                     border-radius: 8px; font-family: var(--font); font-size: 14px;
+                     margin-top: 4px; outline: none;">
+            @if (campoInvalido(nuevaSolicitud.fecha_inicio_prestamo)) {
+              <span style="font-size: 12px; color: #ef4444;">Este campo es obligatorio</span>
+            }
+          </div>
+
+          <div>
+            <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+              Fecha fin préstamo *
+            </label>
+            <input type="datetime-local" [(ngModel)]="nuevaSolicitud.fecha_fin_prestamo"
+              [style.border-color]="campoInvalido(nuevaSolicitud.fecha_fin_prestamo) ? '#ef4444' : '#E5E7EB'"
+              style="width: 100%; padding: 10px 14px; border-width: 1.5px; border-style: solid;
+                     border-radius: 8px; font-family: var(--font); font-size: 14px;
+                     margin-top: 4px; outline: none;">
+            @if (campoInvalido(nuevaSolicitud.fecha_fin_prestamo)) {
+              <span style="font-size: 12px; color: #ef4444;">Este campo es obligatorio</span>
+            }
+          </div>
+
+          <div>
+            <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+              Motivo del préstamo
+            </label>
+            <textarea [(ngModel)]="nuevaSolicitud.motivo"
+              placeholder="Explica el motivo del préstamo..."
+              rows="3"
+              style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                     border-radius: 8px; font-family: var(--font); font-size: 14px;
+                     margin-top: 4px; outline: none; resize: vertical;"></textarea>
+          </div>
+        }
+
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+        <button (click)="cerrarModalSolicitud()"
+          style="padding: 10px 20px; border: 1.5px solid #E5E7EB; border-radius: 8px;
+                 background: white; cursor: pointer; font-family: var(--font); font-size: 14px;">
+          Cancelar
+        </button>
+        <button (click)="guardarSolicitud()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          {{ guardandoSolicitud ? 'Guardando...' : 'Crear solicitud' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- Modal motivo -->
+@if (mostrarModalMotivo) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 400px; max-width: 90vw;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; font-weight: 700;">Motivo del préstamo</h2>
+        <button (click)="cerrarModalMotivo()"
+          style="background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+        {{ motivoActual }}
+      </p>
+
+      <div style="margin-top: 24px; text-align: right;">
+        <button (click)="cerrarModalMotivo()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

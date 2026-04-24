@@ -1,0 +1,165 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Analíticos</h1>
+    <p class="page-subtitle">Resumen de actividad del laboratorio</p>
+  </div>
+</div>
+
+<div class="page-body" *ngIf="!cargando; else loadingTpl">
+
+  <div *ngIf="error" class="info-banner info-banner--orange">{{ error }}</div>
+
+  <div class="stats-row">
+    <div *ngFor="let stat of stats" class="card card--compact">
+      <div class="stat-box">
+        <div class="stat-box__icon">
+          <lucide-icon [img]="stat.icon" size="18"></lucide-icon>
+        </div>
+        <div class="stat-box__value">{{ stat.value }}</div>
+        <div class="stat-box__label">{{ stat.label }}</div>
+        <div class="stat-box__sub">{{ stat.sub }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="analytics-grid">
+
+    <div class="chart-card">
+      <div class="chart-card__title">
+        <div class="chart-title-icon">
+          <lucide-icon [img]="Clock" size="16"></lucide-icon>
+        </div>
+        Solicitudes esta semana
+      </div>
+
+      <div class="chart-card__sub">
+        Distribución por día de la semana actual
+      </div>
+
+      <div class="weekly-chart">
+        <div *ngFor="let bar of barras" class="weekly-chart__col">
+          <div class="weekly-chart__value">{{ bar.value }}</div>
+
+          <div class="weekly-chart__bar-area">
+            <div
+              class="weekly-chart__bar"
+              [class.weekly-chart__bar--highlight]="bar.highlight"
+              [style.height]="barHeight(bar)">
+            </div>
+          </div>
+
+          <div class="weekly-chart__label">{{ bar.label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+
+      <div class="top-device-card">
+        <div class="top-device-card__label">
+          <div class="chart-title-icon">
+            <lucide-icon [img]="Monitor" size="16"></lucide-icon>
+          </div>
+          Equipo más usado
+        </div>
+        <div class="top-device-card__name">{{ topEquipoNombre }}</div>
+        <div class="top-device-card__hours">{{ topEquipoHoras }}</div>
+      </div>
+
+      <div class="chart-card" style="flex: 1;">
+        <div class="chart-card__title">
+          <div class="chart-title-icon">
+            <lucide-icon [img]="TrendingUp" size="16"></lucide-icon>
+          </div>
+          Tendencia al mes
+        </div>
+
+        <div class="chart-card__sub">Préstamos por mes</div>
+
+        <div class="chart-line-area">
+          <svg
+            viewBox="0 0 300 100"
+            preserveAspectRatio="none"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;">
+            <path [attr.d]="trendArea" fill="rgba(253,190,17,0.18)"></path>
+            <path
+              [attr.d]="trendPath"
+              fill="none"
+              stroke="#FF9500"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+            </path>
+          </svg>
+        </div>
+
+        <div class="chart-x-labels">
+          <span *ngFor="let lbl of trendLabels">{{ lbl }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="card__header">
+      <div class="chart-card__title">
+        <div class="chart-title-icon">
+          <lucide-icon [img]="Layers" size="16"></lucide-icon>
+        </div>
+        Uso por dispositivo
+      </div>
+    </div>
+
+    <div *ngIf="deviceUsage.length === 0" class="info-banner">
+      <lucide-icon [img]="Info" size="16"></lucide-icon>
+      No hay datos suficientes.
+    </div>
+
+    <div *ngFor="let d of deviceUsage" class="device-bar-item">
+      <div class="device-bar-item__color" [style.background]="d.color"></div>
+      <div class="device-bar-item__name">{{ d.name }}</div>
+      <div class="device-bar-item__bar-wrap">
+        <div
+          class="device-bar-item__bar-fill"
+          [style.width.%]="d.pct"
+          [style.background]="d.color">
+        </div>
+      </div>
+      <div class="device-bar-item__hours">{{ d.valueText }}</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="card__header">
+      <div class="chart-card__title">
+        <div class="chart-title-icon">
+          <lucide-icon [img]="Users" size="16"></lucide-icon>
+        </div>
+        Top usuarios
+      </div>
+    </div>
+
+    <div *ngFor="let u of topUsers; let i = index" class="movement-item">
+      <div class="movement-item__arrow movement-item__arrow--in">{{ i + 1 }}</div>
+      <div class="movement-item__desc">
+        <div><strong>{{ u.name }}</strong></div>
+        <div class="text-xs text-muted">
+          Solicitudes: {{ u.solicitudes }} · Préstamos: {{ u.prestamos }}
+        </div>
+      </div>
+      <div class="movement-item__time">{{ u.total }}</div>
+    </div>
+
+    <div *ngIf="topUsers.length === 0" class="info-banner">
+      <lucide-icon [img]="Info" size="16"></lucide-icon>
+      Sin datos de usuarios.
+    </div>
+  </div>
+
+</div>
+
+<ng-template #loadingTpl>
+  <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+    Cargando analíticos…
+  </div>
+</ng-template>

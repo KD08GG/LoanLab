@@ -1,0 +1,51 @@
+/* ===========================================
+   ENCARGADO HOME — estilos específicos
+========================================== */
+
+.device-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.device-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 6px;
+  padding: 3px 7px;
+}
+
+.device-chip__icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.device-chip__icon [data-lucide] {
+  width: 14px;
+  height: 14px;
+  stroke: var(--text-secondary);
+}
+
+.device-chip__count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Variante pequeña para tabla de eventos */
+.device-chip--sm .device-chip__icon { width: 15px; height: 15px; }
+.device-chip--sm .device-chip__icon [data-lucide] { width: 13px; height: 13px; }
+
+.widget-counter--inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}

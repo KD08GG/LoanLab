@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--white) !important;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+:host-context(body) {
+  background: var(--white);
+}
+.role-card__icon lucide-icon {
+  color: var(--orange-bright) !important;
+}
+.role-card__icon lucide-icon svg {
+  stroke: var(--orange-bright) !important;
+  width: 32px;
+  height: 32px;
+}

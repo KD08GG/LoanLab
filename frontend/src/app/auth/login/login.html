@@ -1,0 +1,45 @@
+<div class="login-wrapper">
+
+  <div class="login-header">
+    <div class="login-logo">
+      <img src="imagenes/logo.png" alt="Digital Makerspace"
+           onerror="this.parentElement.innerHTML='🔬'">
+    </div>
+    <h1 class="login-title">Digital Makerspace</h1>
+    <p class="login-subtitle">Selecciona tu tipo de acceso para continuar</p>
+  </div>
+
+  <div class="role-grid">
+
+    <div class="role-card" (click)="entrar('admin')">
+      <div class="role-card__icon">
+        <lucide-icon [img]="ShieldCheck" size="32"></lucide-icon>
+      </div>
+      <div class="role-card__name">Administrador</div>
+      <div class="role-card__desc">Gestión completa del inventario STEM</div>
+      <button class="role-card__btn">Ingresar</button>
+    </div>
+
+    <div class="role-card" (click)="entrar('usuario')">
+      <div class="role-card__icon">
+        <lucide-icon [img]="GraduationCap" size="32"></lucide-icon>
+      </div>
+      <div class="role-card__name">Estudiante</div>
+      <div class="role-card__desc">Acceso a equipos y solicitudes</div>
+      <button class="role-card__btn">Ingresar</button>
+    </div>
+
+    <div class="role-card" (click)="entrar('encargado')">
+      <div class="role-card__icon">
+        <lucide-icon [img]="ClipboardCheck" size="32"></lucide-icon>
+      </div>
+      <div class="role-card__name">Encargado</div>
+      <div class="role-card__desc">Supervisión de solicitudes y equipos</div>
+      <button class="role-card__btn">Ingresar</button>
+    </div>
+
+  </div>
+
+  <div class="login-footer">UDLAP · STEM · v1.0.0</div>
+
+</div>

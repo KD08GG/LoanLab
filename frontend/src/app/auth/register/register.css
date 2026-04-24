@@ -1,0 +1,196 @@
+/* ── Página completa: dos columnas ── */
+.register-page {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ── Lado izquierdo naranja ── */
+.register-left {
+  width: 380px;
+  flex-shrink: 0;
+  background: var(--orange-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.register-left__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.register-left__logo {
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.register-left__title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.2;
+}
+
+.register-left__subtitle {
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+  font-weight: 500;
+}
+
+/* ── Lado derecho: formulario ── */
+.register-right {
+  flex: 1;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.register-form-wrap {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Botón volver ── */
+.register-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: var(--fs-label);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s;
+  align-self: flex-start;
+}
+
+.register-back:hover { color: var(--text-primary); }
+
+/* ── Badge del rol ── */
+.register-role-badge {
+  display: inline-block;
+  background: rgba(255,149,0,0.12);
+  color: var(--orange-bright);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 50px;
+  margin-bottom: 8px;
+}
+
+/* ── Encabezado ── */
+.register-form__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.register-form__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.register-form__subtitle {
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+}
+
+/* ── Cuerpo del formulario ── */
+.register-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Input con error ── */
+.form-input--error {
+  border-color: var(--status-red) !important;
+}
+
+/* ── Contraseña con botón de ojo ── */
+.register-password-wrap {
+  position: relative;
+}
+
+.register-password-wrap .form-input {
+  padding-right: 44px;
+}
+
+.register-password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.12s;
+}
+
+.register-password-toggle:hover { color: var(--text-primary); }
+
+/* ── Mensaje de error ── */
+.register-error {
+  background: rgba(189,0,0,0.07);
+  border-left: 3px solid var(--status-red);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: var(--fs-label);
+  color: var(--status-red);
+}
+
+/* ── Botón principal ── */
+.register-btn {
+  width: 100%;
+  height: 48px;
+  background: var(--orange-bright);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.12s;
+  margin-top: 4px;
+}
+
+.register-btn:hover:not(:disabled) { opacity: 0.88; }
+.register-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Nota inferior ── */
+.register-note {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.register-note__link {
+  color: var(--orange-bright);
+  text-decoration: underline;
+}

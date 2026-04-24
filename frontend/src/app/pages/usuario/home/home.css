@@ -1,0 +1,137 @@
+/* ===========================================
+   USUARIO HOME — estilos específicos de la pantalla
+   - Widgets de préstamo
+   - Grid de solicitudes
+   - Tarjetas de solicitud rápidas
+========================================== */
+
+.dashboard-grid--2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.dashboard-grid--2col .card {
+  max-height: 600px;
+  overflow: hidden;
+}
+
+.solicitudes-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.cal-events-container {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.loan-full-width .card {
+  max-height: 200px;
+}
+
+.loan-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0 16px;
+}
+
+.loan-hero__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.loan-hero__icon [data-lucide] {
+  stroke: var(--white) !important;
+  width: 26px;
+  height: 26px;
+}
+
+.loan-hero__name {
+  font-size: var(--fs-subtitle);
+  font-weight: 00;
+  color: var(--text-primary);
+}
+
+.loan-hero__meta {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.stats-row--3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Stat boxes compactos - solo en usuario/home */
+.loan-full-width .stat-box {
+  flex-direction: row;
+  align-items: center;
+  padding: 1px 6px;
+  gap: 14px;
+}
+
+.solicitudes-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.solicitud-card {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(0,0,0,0.08);
+  padding: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.solicitud-card:last-child {
+  border-bottom: none;
+}
+
+.solicitud-card:hover {
+  background: rgba(0,0,0,0.03);
+}
+
+.solicitud-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark);
+  flex-shrink: 0;
+}
+
+.solicitud-card__icon [data-lucide] {
+  stroke: var(--text-secondary);
+  width: 22px;
+  height: 22px;
+}
+
+.solicitud-card__body { flex: 1; }
+.solicitud-card__name { font-size: var(--fs-label); font-weight: 700; }
+.solicitud-card__id   { font-size: var(--fs-xs); color: var(--text-muted); }
+.solicitud-card__desc { font-size: var(--fs-small); color: var(--text-secondary); margin-top: 4px; }
+
+.solicitud-card__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}

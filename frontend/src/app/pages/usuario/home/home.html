@@ -1,0 +1,308 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">¡Hola, {{ usuario?.nombre_usuario || 'Usuario' }}!</h1>
+    <p class="page-subtitle">Bienvenido al panel de usuario</p>
+  </div>
+</div>
+
+@if (cargando) {
+  <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+    Cargando...
+  </div>
+} @else {
+
+<div class="page-body">
+
+  @if (error) {
+    <div style="background: rgba(244,91,34,0.07); border-left: 3px solid var(--orange);
+                border-radius: 8px; padding: 10px 14px; font-size: 13px;
+                color: var(--text-secondary); margin-bottom: 16px;">
+      {{ error }}
+    </div>
+  }
+
+  @if (mensajeExito) {
+    <div style="background: rgba(22,167,0,0.08); border-left: 3px solid var(--status-green);
+                border-radius: 8px; padding: 10px 14px; font-size: 13px;
+                color: var(--text-secondary); margin-bottom: 16px;">
+      {{ mensajeExito }}
+    </div>
+  }
+
+  <!-- ── Equipo en préstamo ── -->
+  <div class="loan-full-width">
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">
+          <div class="card__title-icon"><lucide-icon [img]="Monitor" size="16"></lucide-icon></div>
+          Equipo en préstamo
+        </div>
+        @if (prestamoActivo) {
+          <span class="badge badge--green">Activo</span>
+        } @else {
+          <span class="badge badge--yellow">Sin préstamo</span>
+        }
+      </div>
+
+      @if (prestamoActivo) {
+        <div class="loan-hero">
+          <div class="loan-hero__icon">
+            <lucide-icon [img]="prestamoActivo.icon" size="26"></lucide-icon>
+          </div>
+          <div style="flex: 1;">
+            <div class="loan-hero__name">{{ prestamoActivo.nombre_equipo }}</div>
+            <div class="loan-hero__meta">
+              @if (prestamoActivo.fecha_fin) {
+                Devolver en {{ calcularDiasRestantes(prestamoActivo.fecha_fin) }} días ·
+              }
+              {{ prestamoActivo.num_serie }}
+            </div>
+          </div>
+          <!-- Botón devolver -->
+          <button
+            (click)="abrirModalDevolucion()"
+            style="display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+                   background: var(--dark); color: white; border: none;
+                   border-radius: 10px; cursor: pointer; font-family: var(--font);
+                   font-size: 13px; font-weight: 600; flex-shrink: 0;">
+            <lucide-icon [img]="RotateCcw" size="14"></lucide-icon>
+            Devolver equipo
+          </button>
+        </div>
+      } @else {
+        <div style="background: rgba(20,184,166,0.07); border-left: 3px solid var(--teal);
+                    border-radius: 8px; padding: 10px 14px; font-size: 13px;
+                    color: var(--text-secondary); display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+          <lucide-icon [img]="Info" size="16"></lucide-icon>
+          No tienes un préstamo activo. Visita <strong>Mis dispositivos</strong> para solicitar uno.
+        </div>
+      }
+
+      <div class="stats-row--3" style="margin-top: 10px;">
+        <div class="stat-box">
+          <div class="stat-box__icon"><lucide-icon [img]="Clock" size="18"></lucide-icon></div>
+          <div class="stat-box__value">{{ movimientosSemana }}</div>
+          <div class="stat-box__label">Solicitudes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box__icon"><lucide-icon [img]="Monitor" size="18"></lucide-icon></div>
+          <div class="stat-box__value">{{ activosCount }}</div>
+          <div class="stat-box__label">Activos</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box__icon"><lucide-icon [img]="Package" size="18"></lucide-icon></div>
+          <div class="stat-box__value">{{ solicitudesPendientes.length }}</div>
+          <div class="stat-box__label">Pendientes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid--2col">
+
+    <!-- ── Mis Solicitudes ── -->
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">
+          <div class="card__title-icon"><lucide-icon [img]="ClipboardList" size="16"></lucide-icon></div>
+          Mis Solicitudes
+        </div>
+        <span class="badge badge--teal">{{ solicitudesActivas.length }} activas</span>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-pill" [class.active]="activeTab === 'activas'"    (click)="switchTab('activas')">Activas</button>
+        <button class="tab-pill" [class.active]="activeTab === 'pendientes'" (click)="switchTab('pendientes')">Pendientes</button>
+        <button class="tab-pill" [class.active]="activeTab === 'historial'"  (click)="switchTab('historial')">Historial</button>
+      </div>
+
+      <div class="solicitudes-container">
+
+        @if (activeTab === 'activas') {
+          @for (sol of solicitudesActivas; track sol.id) {
+            <div class="solicitud-card">
+              <div class="solicitud-card__icon"><lucide-icon [img]="sol.icon" size="22"></lucide-icon></div>
+              <div class="solicitud-card__body">
+                <div class="solicitud-card__name">{{ sol.nombre_equipo }}</div>
+                <div class="solicitud-card__id">{{ sol.num_serie }}</div>
+                <div class="solicitud-card__desc">{{ sol.tipo === 'evento' ? 'Evento' : 'Normal' }} · {{ sol.fecha }}</div>
+              </div>
+              <div class="solicitud-card__meta">
+                <span class="badge" [ngClass]="getBadgeClass(sol.estado)">{{ sol.estado }}</span>
+              </div>
+            </div>
+          }
+          @empty {
+            <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px;">
+              No tienes solicitudes activas
+            </div>
+          }
+        }
+
+        @if (activeTab === 'pendientes') {
+          @for (sol of solicitudesPendientes; track sol.id) {
+            <div class="solicitud-card">
+              <div class="solicitud-card__icon"><lucide-icon [img]="sol.icon" size="22"></lucide-icon></div>
+              <div class="solicitud-card__body">
+                <div class="solicitud-card__name">{{ sol.nombre_equipo }}</div>
+                <div class="solicitud-card__id">{{ sol.num_serie }}</div>
+                <div class="solicitud-card__desc">En revisión · {{ sol.fecha }}</div>
+              </div>
+              <div class="solicitud-card__meta">
+                <span class="badge badge--yellow">Pendiente</span>
+              </div>
+            </div>
+          }
+          @empty {
+            <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px;">
+              No tienes solicitudes pendientes
+            </div>
+          }
+        }
+
+        @if (activeTab === 'historial') {
+          @for (sol of solicitudesHistorial; track sol.id) {
+            <div class="solicitud-card">
+              <div class="solicitud-card__icon"><lucide-icon [img]="sol.icon" size="22"></lucide-icon></div>
+              <div class="solicitud-card__body">
+                <div class="solicitud-card__name">{{ sol.nombre_equipo }}</div>
+                <div class="solicitud-card__id">{{ sol.num_serie }}</div>
+                <div class="solicitud-card__desc">{{ sol.fecha }}</div>
+              </div>
+              <div class="solicitud-card__meta">
+                <span class="badge" [ngClass]="getBadgeClass(sol.estado)">{{ sol.estado }}</span>
+              </div>
+            </div>
+          }
+          @empty {
+            <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px;">
+              Sin historial registrado
+            </div>
+          }
+        }
+
+      </div>
+    </div>
+
+    <!-- ── Calendario interactivo (mismo patrón que Admin) ── -->
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">
+          <div class="cal-header">
+            <span class="cal-day-num">{{ diaNum }}</span>
+            <div class="cal-month-day">
+              <span class="cal-month-name">{{ mesNombre }}</span>
+              <span class="cal-day-name">{{ diaNombre }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strip de días clickeables -->
+      <div class="cal-strip">
+        @for (dia of stripDias; track dia.num) {
+          <div
+            class="cal-strip__day"
+            [class.today]="dia.hoy"
+            [class.selected]="esDiaSeleccionado(dia)"
+            style="cursor: pointer;"
+            (click)="seleccionarDia(dia)">
+            <div class="cal-strip__num">{{ dia.num }}</div>
+            <span>{{ dia.label }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="cal-section">
+        <div class="cal-section-title">Eventos del {{ diaNum }} de {{ mesNombre }}</div>
+        @for (ev of eventosHoy; track ev.title) {
+          <div class="cal-event">
+            <div class="cal-event__bar" [style.background]="ev.bar"></div>
+            <div class="cal-event__info">
+              <div class="cal-event__time">{{ ev.time }}</div>
+              <div class="cal-event__title">{{ ev.title }}</div>
+            </div>
+          </div>
+        }
+        @empty {
+          <div style="text-align: center; color: var(--text-muted); padding: 10px; font-size: 13px;">
+            Sin eventos este día
+          </div>
+        }
+      </div>
+
+      <div class="cal-section">
+        <div class="cal-section-title">Próximos eventos</div>
+        <div class="cal-events-container">
+          @for (ev of eventosProximos; track ev.title) {
+            <div class="cal-event-group">
+              <div class="cal-event__date">{{ ev.date }}</div>
+              <div class="cal-event">
+                <div class="cal-event__bar" [style.background]="ev.bar"></div>
+                <div class="cal-event__info">
+                  <div class="cal-event__time">{{ ev.time }}</div>
+                  <div class="cal-event__title">{{ ev.title }}</div>
+                </div>
+              </div>
+            </div>
+          }
+          @empty {
+            <div style="text-align: center; color: var(--text-muted); padding: 10px; font-size: 13px;">
+              Sin eventos próximos
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ── Modal: Confirmar devolución ── -->
+@if (mostrarModalDevolucion && prestamoParaDevolver) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 420px; max-width: 90vw;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 18px; font-weight: 700;">Confirmar devolución</h2>
+        <button (click)="cerrarModalDevolucion()"
+          style="background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <div style="background: rgba(20,184,166,0.07); border-left: 3px solid var(--teal);
+                  border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">
+          {{ prestamoParaDevolver.nombre_equipo }}
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+          {{ prestamoParaDevolver.num_serie }}
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px;">
+        ¿Confirmas la devolución de este equipo? Esta acción cerrará el préstamo activo.
+      </p>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button (click)="cerrarModalDevolucion()"
+          style="padding: 10px 20px; border: 1.5px solid #E5E7EB; border-radius: 8px;
+                 background: white; cursor: pointer; font-family: var(--font); font-size: 14px;">
+          Cancelar
+        </button>
+        <button (click)="confirmarDevolucion()"
+          style="padding: 10px 20px; background: var(--dark); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          {{ devolviendo ? 'Procesando...' : 'Confirmar devolución' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+}

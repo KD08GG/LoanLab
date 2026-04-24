@@ -1,0 +1,185 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Ajustes</h1>
+    <p class="page-subtitle">Configura las preferencias del sistema</p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="UserCog" size="16"></lucide-icon></div>
+        Perfil de Administrador
+      </div>
+    </div>
+    <div class="profile-card-grid">
+      <div class="profile-avatar-lg"><lucide-icon [img]="User" size="32"></lucide-icon></div>
+      <div class="form-grid-2">
+        <div class="form-field">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-input" value="Miguel Castán">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" class="form-input" value="miguel.castan@udlap.mx">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Rol</label>
+          <input type="text" class="form-input" value="Administrador" disabled>
+        </div>
+        <div class="form-field">
+          <label class="form-label">ID de empleado</label>
+          <input type="text" class="form-input" value="176283" disabled>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-with-icon">
+        <div class="btn-icon-slot"><lucide-icon [img]="Save" size="16"></lucide-icon></div>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="Lock" size="16"></lucide-icon></div>
+        Seguridad
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-field">
+        <label class="form-label">Contraseña actual</label>
+        <input type="password" class="form-input" placeholder="••••••••">
+      </div>
+      <div></div>
+      <div class="form-field">
+        <label class="form-label">Nueva contraseña</label>
+        <input type="password" class="form-input" placeholder="••••••••">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Confirmar nueva contraseña</label>
+        <input type="password" class="form-input" placeholder="••••••••">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-with-icon">
+        <div class="btn-icon-slot"><lucide-icon [img]="Key" size="16"></lucide-icon></div>
+        Actualizar contraseña
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="SlidersHorizontal" size="16"></lucide-icon></div>
+        Preferencias del sistema
+      </div>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-row__info">
+        <div class="toggle-row__title">Notificaciones de solicitudes</div>
+        <div class="toggle-row__desc">Recibe alertas cuando lleguen nuevas solicitudes</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" checked>
+        <span class="toggle__slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-row__info">
+        <div class="toggle-row__title">Alertas de mantenimiento</div>
+        <div class="toggle-row__desc">Notificaciones cuando un equipo requiera mantenimiento</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" checked>
+        <span class="toggle__slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-row__info">
+        <div class="toggle-row__title">Recordatorios de eventos</div>
+        <div class="toggle-row__desc">Recibe recordatorios 24h antes de cada evento</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox">
+        <span class="toggle__slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-row__info">
+        <div class="toggle-row__title">Modo compacto de tablas</div>
+        <div class="toggle-row__desc">Reduce el espaciado en las tablas para mostrar más filas</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox">
+        <span class="toggle__slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="Clock" size="16"></lucide-icon></div>
+        Reglas de préstamo
+      </div>
+    </div>
+    <div class="form-grid-3">
+      <div class="form-field">
+        <label class="form-label">Tiempo máximo préstamo normal (hrs)</label>
+        <input type="number" class="form-input" value="4" min="1" max="24">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Tiempo máximo préstamo extendido (días)</label>
+        <input type="number" class="form-input" value="7" min="1" max="30">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Días de gracia antes de suspensión</label>
+        <input type="number" class="form-input" value="2" min="0" max="10">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-with-icon">
+        <div class="btn-icon-slot"><lucide-icon [img]="Save" size="16"></lucide-icon></div>
+        Guardar reglas
+      </button>
+    </div>
+  </div>
+
+  <div class="card danger-zone">
+    <div class="card__header">
+      <div class="card__title" style="color: var(--status-red);">
+        <div class="card__title-icon">
+          <lucide-icon [img]="TriangleAlert" size="16"></lucide-icon>
+        </div>
+        Zona de riesgo
+      </div>
+    </div>
+    <div class="danger-row">
+      <div class="danger-row__info">
+        <div class="danger-row__title">Exportar todos los datos</div>
+        <div class="danger-row__desc">Descarga un respaldo completo de inventario, usuarios y movimientos</div>
+      </div>
+      <button class="btn btn--outline">
+        <lucide-icon [img]="Download" size="14"></lucide-icon>
+        Exportar
+      </button>
+    </div>
+    <div class="danger-row" style="margin-top: 12px;">
+      <div class="danger-row__info">
+        <div class="danger-row__title danger-row__title--red">Restablecer sistema</div>
+        <div class="danger-row__desc">Elimina todos los registros de movimientos y solicitudes. Esta acción no se puede deshacer.</div>
+      </div>
+      <button class="btn btn--danger">
+        <lucide-icon [img]="Trash2" size="14"></lucide-icon>
+        Restablecer
+      </button>
+    </div>
+  </div>
+
+</div>

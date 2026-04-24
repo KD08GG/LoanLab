@@ -1,0 +1,19 @@
+.cal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cal-strip__day.selected {
+  background: var(--orange-bright);
+  color: white;
+  border-radius: 8px;
+}
+
+.cal-strip__day.selected .cal-strip__num {
+  color: white;
+}
+
+.cal-strip__day.selected span {
+  color: white;
+}

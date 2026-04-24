@@ -1,0 +1,80 @@
+<div class="register-page">
+
+  <!-- Lado izquierdo: decorativo -->
+  <div class="register-left">
+    <div class="register-left__content">
+      <div class="register-left__logo">
+        <img src="imagenes/logo.png" alt="Digital Makerspace"
+             onerror="this.parentElement.innerHTML='🔬'"
+             style="width:80px; height:80px; object-fit:contain;">
+      </div>
+      <div class="register-left__title">Digital<br>Makerspace</div>
+      <div class="register-left__subtitle">UDLAP · STEM</div>
+    </div>
+  </div>
+
+  <!-- Lado derecho: formulario -->
+  <div class="register-right">
+    <div class="register-form-wrap">
+
+      <!-- Botón volver -->
+      <button class="register-back" (click)="volver()">
+        <lucide-icon [img]="ArrowLeft" size="16"></lucide-icon>
+        Cambiar rol
+      </button>
+
+      <!-- Encabezado -->
+      <div class="register-form__header">
+        <div class="register-role-badge">{{ tituloRol }}</div>
+        <h1 class="register-form__title">Ingreso a Digital Makerspace</h1>
+        <p class="register-form__subtitle">{{ descripcionRol }}</p>
+      </div>
+
+      <div class="register-form__body">
+
+        <div class="form-field">
+          <label class="form-label">ID UDLAP</label>
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Ej. 177432"
+            [(ngModel)]="idUdlap"
+            [class.form-input--error]="error && !idUdlap">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Contraseña</label>
+          <div class="register-password-wrap">
+            <input
+              [type]="mostrarPassword ? 'text' : 'password'"
+              class="form-input"
+              placeholder="••••••••"
+              [(ngModel)]="password"
+              [class.form-input--error]="error && !password">
+            <button class="register-password-toggle" (click)="togglePassword()" type="button">
+              <lucide-icon [img]="mostrarPassword ? EyeOff : Eye" size="18"></lucide-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="register-error" *ngIf="error">
+          {{ error }}
+        </div>
+
+        <button
+          class="register-btn"
+          (click)="iniciarSesion()"
+          [disabled]="cargando">
+          {{ cargando ? 'Ingresando...' : 'Iniciar Sesión' }}
+        </button>
+
+        <p class="register-note">
+          Si olvidaste tu contraseña o tu cuenta está bloqueada, visita el
+          <a href="#" class="register-note__link">Portal de Administración de Contraseñas</a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,321 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Inventario</h1>
+    <p class="page-subtitle">
+      {{ equipos.length > 0 ? 'Hay ' + equipos.length + ' dispositivos registrados' : 'Cargando dispositivos...' }}
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <div style="position: relative;">
+      <input
+        type="text"
+        placeholder="Buscar dispositivo..."
+        (input)="buscar($event)"
+        style="padding: 10px 16px 10px 40px; border: 1.5px solid #E5E7EB;
+               border-radius: 50px; font-family: var(--font); font-size: 14px;
+               outline: none; width: 220px;">
+      <div style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%);">
+        <lucide-icon [img]="Search" size="16"></lucide-icon>
+      </div>
+    </div>
+    <button class="btn-with-icon" (click)="abrirModal()">
+      <div class="btn-icon-slot"><lucide-icon [img]="Plus" size="16"></lucide-icon></div>
+      Agregar dispositivo
+    </button>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="tab-bar">
+    <button class="tab-pill" [class.active]="tabActivo === 'todas'"
+      (click)="cambiarTab('todas')">Todas</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'disponible'"
+      (click)="cambiarTab('disponible')">Disponible</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'ocupado'"
+      (click)="cambiarTab('ocupado')">Ocupado</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'no disponible'"
+      (click)="cambiarTab('no disponible')">No disponible</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'mantenimiento'"
+      (click)="cambiarTab('mantenimiento')">Mantenimiento</button>
+  </div>
+
+  <div class="status-legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #16A700;"></div>Disponible
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #FDBE11;"></div>Ocupado
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #F45B22;"></div>No disponible
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #BD0000;"></div>Mantenimiento
+    </div>
+  </div>
+
+  @if (error) {
+    <div class="card" style="text-align: center; padding: 40px; color: var(--orange);">
+      No se pudo conectar con la API. Verifica que el backend esté corriendo.
+    </div>
+  } @else {
+    <div class="card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Equipo</th>
+              <th>ID</th>
+              <th>N° Serie</th>
+              <th>Estado</th>
+              <th>Comentarios</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (equipo of equiposFiltrados; track equipo.id_equipo) {
+              <tr>
+                <td>
+                  <div class="cell-with-icon">
+                    <div class="cell-icon">
+                      <lucide-icon [img]="obtenerIcono(equipo.nombre_equipo)" size="16"></lucide-icon>
+                    </div>
+                    {{ equipo.nombre_equipo }}
+                  </div>
+                </td>
+                <td class="text-muted fw-600">{{ equipo.id_equipo }}</td>
+                <td class="text-muted fw-600">{{ equipo.num_serie }}</td>
+                <td>
+                  <span [class]="obtenerClaseBadge(equipo.id_estado_equipo)">
+                    {{ obtenerTextoEstado(equipo.id_estado_equipo) }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-btns">
+                    <button class="icon-btn" title="Editar" (click)="abrirModalEditar(equipo)">
+                      <div class="icon-slot">
+                        <lucide-icon [img]="Pencil" size="15"></lucide-icon>
+                      </div>
+                    </button>
+                    <button class="icon-btn" title="Eliminar" (click)="eliminarEquipo(equipo)">
+                      <div class="icon-slot">
+                        <lucide-icon [img]="Trash2" size="15"></lucide-icon>
+                      </div>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  @if (esOcupado(equipo.id_estado_equipo)) {
+                    <button class="btn-action btn-action--accept"
+                      title="Devolver equipo"
+                      (click)="devolverEquipo(equipo)"
+                      style="padding: 5px 12px; font-size: 12px; font-weight: 600;">
+                      Devolver
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  {{ cargando ? 'Cargando equipos...' : 'No hay equipos en esta categoría.' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+</div>
+
+@if (mostrarModalEditar) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 480px; max-width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="font-size: 20px; font-weight: 700;">Editar dispositivo</h2>
+        <button (click)="cerrarModalEditar()"
+          style="background: none; border: none; cursor: pointer;
+                 font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Nombre del equipo *
+          </label>
+          <input type="text" [(ngModel)]="equipoEditandoForm.nombre_equipo"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Marca *
+          </label>
+          <input type="text" [(ngModel)]="equipoEditandoForm.marca"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Modelo
+          </label>
+          <input type="text" [(ngModel)]="equipoEditandoForm.modelo"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Número de serie *
+          </label>
+          <input type="text" [(ngModel)]="equipoEditandoForm.num_serie"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Estado
+          </label>
+          <select [(ngModel)]="equipoEditandoForm.id_estado_equipo"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+            @for (estado of estados; track estado.id_estado_equipo) {
+              <option [value]="estado.id_estado_equipo">{{ estado.nombre_estado }}</option>
+            }
+          </select>
+        </div>
+
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+        <button (click)="cerrarModalEditar()"
+          style="padding: 10px 20px; border: 1.5px solid #E5E7EB; border-radius: 8px;
+                 background: white; cursor: pointer; font-family: var(--font); font-size: 14px;">
+          Cancelar
+        </button>
+        <button (click)="guardarEdicion()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          {{ guardandoEditar ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+@if (mostrarModal) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 480px; max-width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="font-size: 20px; font-weight: 700;">Agregar dispositivo</h2>
+        <button (click)="cerrarModal()"
+          style="background: none; border: none; cursor: pointer;
+                 font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Nombre del equipo *
+          </label>
+          <input type="text" [(ngModel)]="nuevoEquipo.nombre_equipo"
+            placeholder="Ej: MacBook Air 13"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Marca *
+          </label>
+          <input type="text" [(ngModel)]="nuevoEquipo.marca"
+            placeholder="Ej: Apple"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Modelo</label>
+          <input type="text" [(ngModel)]="nuevoEquipo.modelo"
+            placeholder="Ej: MacBook Air 13 M2"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Número de serie *
+          </label>
+          <input type="text" [(ngModel)]="nuevoEquipo.num_serie"
+            placeholder="Ej: SN001"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Fecha de alta *
+          </label>
+          <input type="date" [(ngModel)]="nuevoEquipo.fecha_alta"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Estado</label>
+          <select [(ngModel)]="nuevoEquipo.id_estado_equipo"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+            @for (estado of estados; track estado.id_estado_equipo) {
+              <option [value]="estado.id_estado_equipo">{{ estado.nombre_estado }}</option>
+            }
+          </select>
+        </div>
+
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+        <button (click)="cerrarModal()"
+          style="padding: 10px 20px; border: 1.5px solid #E5E7EB; border-radius: 8px;
+                 background: white; cursor: pointer; font-family: var(--font); font-size: 14px;">
+          Cancelar
+        </button>
+        <button (click)="agregarEquipo()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          {{ guardando ? 'Guardando...' : 'Agregar equipo' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

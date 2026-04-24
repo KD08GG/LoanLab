@@ -1,0 +1,21 @@
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.btn-action lucide-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-action--reject lucide-icon svg {
+  stroke: var(--orange);
+}
+
+.btn-action--accept lucide-icon svg {
+  stroke: var(--teal);
+}

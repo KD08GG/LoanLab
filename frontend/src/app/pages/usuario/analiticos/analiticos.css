@@ -1,0 +1,162 @@
+/* ===========================================
+   USUARIO ANALÍTICOS — estilos específicos
+=========================================== */
+
+/* ── Barras de actividad semanal ── */
+.chart-bars {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+  align-items: flex-end;
+  min-height: 160px;
+  margin-top: 12px;
+}
+
+.chart-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-height: 160px;
+}
+
+.chart-bar {
+  width: 100%;
+  max-width: 56px;
+  min-height: 8px;
+  border-radius: 8px 8px 0 0;
+  background: var(--yellow);
+  transition: height 0.25s ease;
+}
+
+.chart-bar--highlight { background: var(--orange-bright); }
+
+.chart-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── Gráfica de línea (tendencia) ── */
+.chart-line-area {
+  position: relative;
+  height: 120px;
+  margin-top: 12px;
+}
+
+.chart-x-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ── Uso por dispositivo ── */
+.device-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.device-bar-item:last-child { border-bottom: none; }
+
+.device-bar-item__color {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.device-bar-item__name {
+  font-size: 13px;
+  color: var(--text-primary);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.device-bar-item__bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.device-bar-item__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.device-bar-item__hours {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── Heatmap tipo GitHub ── */
+.heatmap-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.heatmap-days {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 22px; /* alinea con el grid */
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.heatmap-days span {
+  height: 11px;
+  line-height: 11px;
+  /* Lun, Mié, Vie — espaciado para que queden en filas 0, 2, 4 */
+  margin-bottom: 11px;
+}
+
+.heatmap-grid-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.heatmap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.heatmap-row {
+  display: flex;
+  gap: 2px;
+}
+
+.heatmap-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  transition: background 0.1s;
+  cursor: default;
+}
+
+.heatmap-cell:hover {
+  outline: 1.5px solid rgba(0,0,0,0.25);
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}

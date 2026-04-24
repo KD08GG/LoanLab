@@ -1,0 +1,75 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Movimientos</h1>
+    <p class="page-subtitle">Histórico de movimientos dentro de iOS Lab</p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="tab-bar">
+    <button class="tab-pill" [class.active]="tabActivo === 'hoy'"
+      (click)="cambiarTab('hoy')">Hoy</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'semana'"
+      (click)="cambiarTab('semana')">Semana</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'todas'"
+      (click)="cambiarTab('todas')">Todas</button>
+  </div>
+
+  @if (error) {
+    <div class="card" style="text-align: center; padding: 40px; color: var(--orange);">
+      No se pudo conectar con la API.
+    </div>
+  } @else {
+    <div class="card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dispositivos</th>
+              <th>Usuario</th>
+              <th>ID</th>
+              <th>Programa</th>
+              <th>Fecha</th>
+              <th>Estado del equipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of solicitudesFiltradas; track s.id_solicitud) {
+              <tr>
+                <td>
+                  <div class="cell-with-icon">
+                    <div class="cell-icon">
+                      <lucide-icon [img]="obtenerIconoEquipo(getEquipo(s.id_equipo)?.nombre_equipo || '')" size="16"></lucide-icon>
+                    </div>
+                    <div class="cell-device">
+                      <span class="cell-device__name">{{ getEquipo(s.id_equipo)?.nombre_equipo || '-' }}</span>
+                      <span class="cell-device__id">{{ getEquipo(s.id_equipo)?.num_serie || '-' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ getUsuario(s.id_usuario_solicita)?.nombre_usuario || '-' }}</td>
+                <td class="text-muted">{{ getUsuario(s.id_usuario_solicita)?.id_usuario || '-' }}</td>
+                <td>{{ s.grupo_solicitud || getUsuario(s.id_usuario_solicita)?.programa || '-' }}</td>
+                <td class="text-muted">{{ formatearFecha(s.fecha_solicitud) }}</td>
+                <td>
+                  <span [class]="obtenerClaseBadgeEquipo(s.id_equipo)">
+                    {{ obtenerTextoEstadoEquipo(s.id_equipo) }}
+                  </span>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  {{ cargando ? 'Cargando movimientos...' : 'Sin movimientos para este periodo.' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+</div>

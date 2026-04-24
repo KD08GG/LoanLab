@@ -1,0 +1,388 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Eventos</h1>
+    <p class="page-subtitle">Gestión del calendario de eventos</p>
+  </div>
+  <div class="page-header__actions">
+    <button class="btn-with-icon" (click)="abrirModal()">
+      <div class="btn-icon-slot"><lucide-icon [img]="Plus" size="16"></lucide-icon></div>
+      Agregar evento
+    </button>
+  </div>
+</div>
+
+@if (cargando) {
+  <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+    Cargando eventos...
+  </div>
+} @else if (error) {
+  <div class="card" style="text-align: center; padding: 40px; color: var(--orange);">
+    {{ error }}
+  </div>
+} @else {
+
+<div class="page-body">
+
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+    @for (stat of stats; track stat.label) {
+      <div class="card card--compact">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 8px; color: var(--orange-bright);">
+            <lucide-icon [img]="stat.icon" size="18"></lucide-icon>
+            <span style="font-size: 13px; color: var(--text-muted);">{{ stat.sub }}</span>
+          </div>
+          <div style="font-size: 32px; font-weight: 700; color: var(--text-primary); line-height: 1;">
+            {{ stat.value }}
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">
+            {{ stat.label }}
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="card">
+    <div class="card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="card__title" style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px;">
+        <div class="card__title-icon"><lucide-icon [img]="CalendarDays" size="16"></lucide-icon></div>
+        {{ calTitle }}
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn--outline btn--sm" (click)="mesAnterior()">← Mes anterior</button>
+        <button class="btn btn--outline btn--sm" (click)="mesSiguiente()">Mes siguiente →</button>
+      </div>
+    </div>
+
+    <div class="cal-grid">
+      @for (h of calHeaders; track h) {
+        <div class="cal-cell--header">{{ h }}</div>
+      }
+      @for (cell of calCells; track $index) {
+        @if (cell.isEmpty) {
+          <div class="cal-cell--empty"></div>
+        } @else {
+          <div class="cal-cell"
+            [class.cal-cell--selected]="esDiaSeleccionado(cell.day)"
+            style="cursor: pointer;"
+            (click)="seleccionarDia(cell)">
+            @if (cell.isToday) {
+              <div class="cal-cell__today">{{ cell.day }}</div>
+            } @else {
+              <span>{{ cell.day }}</span>
+            }
+            @if (cell.events.length > 0) {
+              <div class="event-chips">
+                @for (ev of cell.events; track ev.label) {
+                  <div class="event-chip"
+                    [style.background]="ev.color"
+                    [style.color]="ev.textColor">
+                    {{ ev.label }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header" style="margin-bottom: 16px;">
+      <div class="card__title" style="font-weight: 600; font-size: 18px;">Registros de agenda</div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Detalle</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ev of eventosTabla; track ev.id) {
+            <tr>
+              <td>
+                <div class="cell-with-icon">
+                  <div class="cell-icon"><lucide-icon [img]="ev.icon" size="16"></lucide-icon></div>
+                  <div class="cell-device">
+                    <span class="cell-device__name">{{ ev.title }}</span>
+                    <span class="cell-device__id">{{ ev.serial }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="text-muted">{{ ev.fecha }}</td>
+              <td>
+                <span class="badge"
+                  [style.background]="ev.badgeColor"
+                  [style.color]="ev.badgeText"
+                  style="padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                  {{ ev.tipo }}
+                </span>
+              </td>
+              <td class="text-muted">{{ ev.detalle }}</td>
+              <td>
+                <span [class]="ev.estado.toLowerCase() === 'aprobada' ? 'badge badge--green' :
+                               ev.estado.toLowerCase() === 'rechazada' ? 'badge badge--red' :
+                               'badge badge--yellow'">
+                  {{ ev.estado || 'Pendiente' }}
+                </span>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                Sin registros de eventos.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header" style="margin-bottom: 16px;">
+      <div class="card__title" style="font-weight: 600; font-size: 18px;">Resumen por grupos</div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Grupo</th>
+            <th>Total</th>
+            <th>Pendientes</th>
+            <th>Aprobadas</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (g of gruposTabla; track g.nombre) {
+            <tr>
+              <td class="fw-600">{{ g.nombre }}</td>
+              <td>{{ g.total }}</td>
+              <td>
+                <span class="badge badge--yellow">{{ g.pendientes }}</span>
+              </td>
+              <td>
+                <span class="badge badge--green">{{ g.aprobadas }}</span>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                Sin grupos registrados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+}
+
+@if (mostrarModal) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 500px; max-width: 90vw; max-height: 90vh; overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="font-size: 20px; font-weight: 700;">Agregar evento</h2>
+        <button (click)="cerrarModal()"
+          style="background: none; border: none; cursor: pointer;
+                 font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Usuario responsable *
+          </label>
+          <select [(ngModel)]="nuevoEvento.id_usuario_solicita"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+            <option [value]="0" disabled>Selecciona un usuario</option>
+            @for (u of usuarios; track u.id_usuario) {
+              <option [value]="u.id_usuario">{{ u.nombre_usuario }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Equipo requerido *
+          </label>
+          <select [(ngModel)]="nuevoEvento.id_equipo"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+            <option [value]="0" disabled>Selecciona un equipo</option>
+            @for (e of equiposDisponibles; track e.id_equipo) {
+              <option [value]="e.id_equipo">{{ e.nombre_equipo }} — {{ e.num_serie }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Nombre del evento / Grupo *
+          </label>
+          <input type="text" [(ngModel)]="nuevoEvento.grupo_solicitud"
+            placeholder="Ej: Hackathon STEM, Podcast UDLAP"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Tipo *
+          </label>
+          <select [(ngModel)]="nuevoEvento.tipo_solicitud"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+            <option value="Evento">Evento</option>
+            <option value="Extendido">Extendido</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Fecha y hora de inicio *
+          </label>
+          <input type="datetime-local" [(ngModel)]="nuevoEvento.fecha_inicio_prestamo"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Fecha y hora de fin *
+          </label>
+          <input type="datetime-local" [(ngModel)]="nuevoEvento.fecha_fin_prestamo"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Descripción / Motivo
+          </label>
+          <textarea [(ngModel)]="nuevoEvento.motivo"
+            placeholder="Describe el evento..."
+            rows="3"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none; resize: vertical;"></textarea>
+        </div>
+
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+        <button (click)="cerrarModal()"
+          style="padding: 10px 20px; border: 1.5px solid #E5E7EB; border-radius: 8px;
+                 background: white; cursor: pointer; font-family: var(--font); font-size: 14px;">
+          Cancelar
+        </button>
+        <button (click)="guardarEvento()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          {{ guardando ? 'Guardando...' : 'Crear evento' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+@if (mostrarModalDia) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 998;"
+       (click)="cerrarModalDia()">
+    <div style="background: white; border-radius: 16px; padding: 28px;
+                width: 420px; max-width: 90vw; max-height: 80vh;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2); display: flex; flex-direction: column;"
+         (click)="$event.stopPropagation()">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 18px; font-weight: 700;">
+          {{ diaNombre }} {{ diaSeleccionado }}, {{ mesNombreModal }}
+        </h2>
+        <button (click)="cerrarModalDia()"
+          style="background: none; border: none; cursor: pointer;
+                 font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      @if (eventosDelDia.length === 0) {
+        <div style="text-align: center; color: var(--text-muted); padding: 32px 0; font-size: 14px;">
+          Sin eventos para este día.
+        </div>
+      } @else {
+        <div style="overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+          @for (ev of eventosDelDia; track ev.id) {
+            <div style="display: flex; gap: 12px; padding: 14px; border-radius: 10px;
+                        background: rgba(0,0,0,0.03); border: 1px solid #F3F4F6;">
+              <div style="width: 4px; border-radius: 4px; flex-shrink: 0;"
+                   [style.background]="ev.color"></div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: var(--text-primary);
+                            margin-bottom: 4px; white-space: nowrap; overflow: hidden;
+                            text-overflow: ellipsis;">
+                  {{ ev.title }}
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">
+                  {{ ev.fecha }}
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <span class="badge"
+                    [style.background]="ev.badgeColor"
+                    [style.color]="ev.badgeText"
+                    style="padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">
+                    {{ ev.tipo }}
+                  </span>
+                  <span [class]="ev.estado.toLowerCase() === 'aprobada' ? 'badge badge--green' :
+                                 ev.estado.toLowerCase() === 'rechazada' ? 'badge badge--red' :
+                                 'badge badge--yellow'"
+                    style="font-size: 11px;">
+                    {{ ev.estado || 'Pendiente' }}
+                  </span>
+                </div>
+                @if (ev.detalle && ev.detalle !== 'Sin detalle') {
+                  <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                    {{ ev.detalle }}
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div style="margin-top: 20px; text-align: right;">
+        <button (click)="cerrarModalDia()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

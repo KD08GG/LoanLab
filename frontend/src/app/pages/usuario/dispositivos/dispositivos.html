@@ -1,0 +1,187 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Mis dispositivos</h1>
+    <p class="page-subtitle">Equipos disponibles en el laboratorio</p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  @if (mensaje) {
+    <div [style.background]="mensajeTipo === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'"
+         [style.border-left]="'3px solid ' + (mensajeTipo === 'success' ? '#22c55e' : '#ef4444')"
+         style="border-radius: 8px; padding: 10px 14px; font-size: 13px;
+                color: var(--text-secondary); margin-bottom: 12px;">
+      {{ mensaje }}
+    </div>
+  }
+
+  <!-- Banner préstamos activos propios -->
+  @for (p of prestamosActivos; track p.id_prestamo) {
+    @if (true) {
+      <div style="background: rgba(20,184,166,0.07); border-left: 3px solid var(--teal);
+                  border-radius: 8px; padding: 10px 14px; font-size: 13px;
+                  color: var(--text-secondary); display: flex; align-items: center;
+                  justify-content: space-between; gap: 12px; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <lucide-icon [img]="Info" size="16"></lucide-icon>
+          <span>Tienes un préstamo activo · Devuélvelo desde la tarjeta del equipo o desde <strong>Mis Solicitudes</strong>.</span>
+        </div>
+      </div>
+    }
+  }
+
+  @if (cargando) {
+    <div style="padding: 40px; text-align: center; color: var(--text-muted);">Cargando dispositivos...</div>
+  } @else if (error) {
+    <div style="padding: 24px; text-align: center; color: #b91c1c;">{{ error }}</div>
+  } @else {
+
+    <!-- Catálogo -->
+    <div class="device-catalog">
+      @for (e of equipos; track e.id_equipo) {
+        <div class="device-card" [class.device-card--mine]="esMioEnPrestamo(e)">
+
+          <div class="device-card__header">
+            <div class="device-card__icon">
+              <lucide-icon [img]="getIconoEquipo(e.nombre_equipo)" size="22"></lucide-icon>
+            </div>
+            <div>
+              <div class="device-card__name">{{ e.nombre_equipo }}</div>
+              <div class="device-card__spec">{{ e.marca }} {{ e.modelo }}</div>
+              <div class="device-card__location">{{ e.num_serie }}</div>
+            </div>
+          </div>
+
+          <div class="device-card__footer">
+            <span class="badge" [ngClass]="getBadgeClass(e.id_estado_equipo)">
+              {{ esMioEnPrestamo(e) ? 'En tu préstamo' : getEstadoNombre(e.id_estado_equipo) }}
+            </span>
+
+            @if (esMioEnPrestamo(e)) {
+              <!-- El usuario tiene este equipo: mostrar botón devolver -->
+              <span class="device-card__cta device-card__cta--devolver"
+                    (click)="devolverEquipo(e)">
+                <lucide-icon [img]="RotateCcw" size="13"></lucide-icon>
+                Devolver
+              </span>
+            } @else if (e.id_estado_equipo === 1) {
+              <!-- Disponible: mostrar botón solicitar -->
+              <span class="device-card__cta" (click)="solicitar(e)">
+                <lucide-icon [img]="Plus" size="13"></lucide-icon>
+                Solicitar →
+              </span>
+            }
+          </div>
+
+        </div>
+      }
+      @empty {
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted); font-size: 14px;">
+          No hay equipos registrados en el laboratorio.
+        </div>
+      }
+    </div>
+
+  }
+
+</div>
+
+<!-- ══════════════════════════════
+     MODAL: Solicitar equipo
+══════════════════════════════ -->
+@if (mostrarModalSolicitud && equipoParaSolicitar) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 440px; max-width: 90vw;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 18px; font-weight: 700;">Solicitar equipo</h2>
+        <button (click)="cerrarModalSolicitud()"
+          style="background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <!-- Ficha del equipo seleccionado -->
+      <div style="background: var(--gray-bg); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+                  display: flex; align-items: center; gap: 14px;">
+        <div class="device-card__icon">
+          <lucide-icon [img]="getIconoEquipo(equipoParaSolicitar.nombre_equipo)" size="20"></lucide-icon>
+        </div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700;">{{ equipoParaSolicitar.nombre_equipo }}</div>
+          <div style="font-size: 12px; color: var(--text-muted);">{{ equipoParaSolicitar.marca }} {{ equipoParaSolicitar.modelo }} · {{ equipoParaSolicitar.num_serie }}</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">
+            Motivo (opcional)
+          </label>
+          <textarea [(ngModel)]="motivoSolicitud"
+            placeholder="¿Para qué necesitas el equipo?"
+            rows="3"
+            style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+                   border-radius: 8px; font-family: var(--font); font-size: 14px;
+                   margin-top: 4px; outline: none; resize: vertical;"></textarea>
+        </div>
+      </div>
+
+
+      <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+        <button (click)="cerrarModalSolicitud()"
+          style="padding: 10px 20px; border: 1.5px solid #E5E7EB; border-radius: 8px;
+                 background: white; cursor: pointer; font-family: var(--font); font-size: 14px;">
+          Cancelar
+        </button>
+        <button (click)="confirmarSolicitud()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          {{ guardandoSolicitud ? 'Enviando...' : 'Enviar solicitud' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════
+     MODAL: Confirmar devolución
+══════════════════════════════ -->
+@if (mostrarModalDevolucion && prestamoParaDevolver) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 420px; max-width: 90vw;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 18px; font-weight: 700;">Confirmar devolución</h2>
+        <button (click)="cerrarModalDevolucion()"
+          style="background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px;">
+        ¿Confirmas la devolución de este equipo? El préstamo quedará cerrado.
+      </p>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button (click)="cerrarModalDevolucion()"
+          style="padding: 10px 20px; border: 1.5px solid #E5E7EB; border-radius: 8px;
+                 background: white; cursor: pointer; font-family: var(--font); font-size: 14px;">
+          Cancelar
+        </button>
+        <button (click)="confirmarDevolucion()"
+          style="padding: 10px 20px; background: var(--dark); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          {{ devolviendo ? 'Procesando...' : 'Confirmar devolución' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

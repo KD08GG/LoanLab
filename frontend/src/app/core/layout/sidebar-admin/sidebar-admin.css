@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+lucide-icon svg {
+  stroke: rgba(255, 255, 255, 0.75);
+  width: 18px;
+  height: 18px;
+}
+
+.nav-item:hover lucide-icon svg,
+.nav-item.active lucide-icon svg {
+  stroke: white;
+}

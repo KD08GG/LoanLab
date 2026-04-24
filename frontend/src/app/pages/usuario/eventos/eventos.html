@@ -1,0 +1,208 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Eventos</h1>
+    <p class="page-subtitle">Calendario de eventos del laboratorio</p>
+  </div>
+</div>
+
+@if (cargando) {
+  <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+    Cargando eventos...
+  </div>
+} @else if (error) {
+  <div class="card" style="text-align: center; padding: 40px; color: var(--orange);">
+    {{ error }}
+  </div>
+} @else {
+
+<div class="page-body">
+
+  <!-- ── Calendario interactivo ── -->
+  <div class="card">
+    <div class="card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="card__title" style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px;">
+        <div class="card__title-icon"><lucide-icon [img]="CalendarDays" size="16"></lucide-icon></div>
+        {{ calTitle }}
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn--outline btn--sm" (click)="mesAnterior()">← Mes anterior</button>
+        <button class="btn btn--outline btn--sm" (click)="mesSiguiente()">Mes siguiente →</button>
+      </div>
+    </div>
+
+    <div class="cal-grid">
+      @for (h of calHeaders; track h) {
+        <div class="cal-cell--header">{{ h }}</div>
+      }
+      @for (cell of calCells; track $index) {
+        @if (cell.isEmpty) {
+          <div class="cal-cell--empty"></div>
+        } @else {
+          <div class="cal-cell">
+            @if (cell.isToday) {
+              <div class="cal-cell__today">{{ cell.day }}</div>
+            } @else {
+              <span>{{ cell.day }}</span>
+            }
+            @if (cell.events.length > 0) {
+              <div class="event-chips">
+                @for (ev of cell.events; track ev.eventoId) {
+                  <!-- Click en chip abre modal de detalles -->
+                  <div class="event-chip"
+                    [style.background]="ev.color"
+                    [style.color]="ev.textColor"
+                    style="cursor: pointer;"
+                    (click)="abrirModalEvento(ev.eventoId)"
+                    title="Ver detalles del evento">
+                    {{ ev.label }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+    <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted); text-align: right;">
+      Haz clic en un evento para ver sus detalles
+    </div>
+  </div>
+
+  <!-- ── Tabla de próximos eventos (sin columna Estado) ── -->
+  <div class="card">
+    <div class="card__header" style="margin-bottom: 16px;">
+      <div class="card__title" style="font-weight: 600; font-size: 18px;">Próximos eventos</div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ev of eventosTabla; track ev.id) {
+            <tr style="cursor: pointer;" (click)="abrirModalEvento(ev.id)">
+              <td>
+                <div class="cell-with-icon">
+                  <div class="cell-icon"><lucide-icon [img]="ev.icon" size="16"></lucide-icon></div>
+                  <div class="cell-device">
+                    <span class="cell-device__name">{{ ev.title }}</span>
+                    <span class="cell-device__id">{{ ev.serial }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="text-muted">{{ ev.fecha }}</td>
+              <td>
+                <span class="badge"
+                  [style.background]="ev.badgeColor"
+                  [style.color]="ev.badgeText"
+                  style="padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                  {{ ev.tipo }}
+                </span>
+              </td>
+              <td class="text-muted">{{ ev.detalle }}</td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                Sin registros de eventos.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════
+     MODAL: Detalles del evento
+══════════════════════════════ -->
+@if (mostrarModalEvento && eventoSeleccionado) {
+  <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+              display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div style="background: white; border-radius: 16px; padding: 32px;
+                width: 460px; max-width: 90vw;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 18px; font-weight: 700;">Detalles del evento</h2>
+        <button (click)="cerrarModalEvento()"
+          style="background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted);">✕</button>
+      </div>
+
+      <!-- Badge tipo -->
+      <div style="margin-bottom: 16px;">
+        <span class="badge"
+          [style.background]="eventoSeleccionado.badgeColor"
+          [style.color]="eventoSeleccionado.badgeText"
+          style="padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+          {{ eventoSeleccionado.tipo }}
+        </span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div class="cell-icon" style="flex-shrink: 0; margin-top: 2px;">
+            <lucide-icon [img]="eventoSeleccionado.icon" size="18"></lucide-icon>
+          </div>
+          <div>
+            <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
+              {{ eventoSeleccionado.title }}
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+              {{ eventoSeleccionado.serial }}
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--gray-bg); border-radius: 10px; padding: 14px 16px;
+                    display: flex; flex-direction: column; gap: 10px;">
+
+          <div style="display: flex; gap: 8px;">
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); min-width: 80px;">Fecha</span>
+            <span style="font-size: 13px; color: var(--text-primary);">{{ eventoSeleccionado.fecha }}</span>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); min-width: 80px;">Grupo</span>
+            <span style="font-size: 13px; color: var(--text-primary);">{{ eventoSeleccionado.grupo }}</span>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); min-width: 80px;">Usuario</span>
+            <span style="font-size: 13px; color: var(--text-primary);">{{ eventoSeleccionado.detalle }}</span>
+          </div>
+
+          @if (eventoSeleccionado.motivo) {
+            <div style="display: flex; gap: 8px;">
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); min-width: 80px;">Motivo</span>
+              <span style="font-size: 13px; color: var(--text-primary); line-height: 1.5;">{{ eventoSeleccionado.motivo }}</span>
+            </div>
+          }
+
+        </div>
+
+      </div>
+
+      <div style="margin-top: 24px; text-align: right;">
+        <button (click)="cerrarModalEvento()"
+          style="padding: 10px 20px; background: var(--orange-bright); color: white;
+                 border: none; border-radius: 8px; cursor: pointer;
+                 font-family: var(--font); font-size: 14px; font-weight: 600;">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+}

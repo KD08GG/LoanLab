@@ -1,0 +1,206 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Mis Analíticos</h1>
+    <p class="page-subtitle">Tu actividad en el iOS Digital Maker Space</p>
+  </div>
+</div>
+
+<div class="page-body" *ngIf="!cargando; else loadingTpl">
+
+  <div *ngIf="error" style="background: rgba(244,91,34,0.07); border-left: 3px solid var(--orange);
+              border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+    No se pudieron cargar tus analíticos.
+  </div>
+
+  <!-- ── Tarjetas de métricas (sin racha) ── -->
+  <div class="stats-row">
+
+    <div class="card card--compact">
+      <div class="stat-box">
+        <div class="stat-box__icon"><lucide-icon [img]="ClipboardList" size="18"></lucide-icon></div>
+        <div class="stat-box__value">{{ solicitudesSemana }}</div>
+        <div class="stat-box__label">Solicitudes esta semana</div>
+        <div class="stat-box__sub">Últimos 7 días</div>
+      </div>
+    </div>
+
+    <div class="card card--compact">
+      <div class="stat-box">
+        <div class="stat-box__icon"><lucide-icon [img]="Repeat" size="18"></lucide-icon></div>
+        <div class="stat-box__value">{{ prestamosMes }}</div>
+        <div class="stat-box__label">Préstamos este mes</div>
+        <div class="stat-box__sub">Últimos 30 días</div>
+      </div>
+    </div>
+
+    <div class="card card--compact">
+      <div class="stat-box">
+        <div class="stat-box__icon"><lucide-icon [img]="TrendingUp" size="18"></lucide-icon></div>
+        <div class="stat-box__value">{{ promedioDiario }}</div>
+        <div class="stat-box__label">Promedio diario</div>
+        <div class="stat-box__sub">Solicitudes + préstamos</div>
+      </div>
+    </div>
+
+    <div class="card card--compact">
+      <div class="stat-box">
+        <div class="stat-box__icon"><lucide-icon [img]="Activity" size="18"></lucide-icon></div>
+        <div class="stat-box__value">{{ totalActividad }}</div>
+        <div class="stat-box__label">Actividad total</div>
+        <div class="stat-box__sub">Todas las solicitudes</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Barras semanales + Tendencia ── -->
+  <div class="analytics-grid">
+
+    <div class="chart-card">
+      <div class="chart-card__title">
+        <div class="chart-title-icon"><lucide-icon [img]="BarChart3" size="16"></lucide-icon></div>
+        Actividad esta semana
+      </div>
+      <div class="chart-card__sub">Solicitudes y préstamos por día</div>
+
+      <div class="chart-bars">
+        <div *ngFor="let barra of barras" class="chart-bar-col">
+          <span class="chart-label" style="font-weight: 600;">{{ barra.total }}</span>
+          <div
+            class="chart-bar"
+            [class.chart-bar--highlight]="barra.highlight"
+            [style.height.%]="barra.altura">
+          </div>
+          <span class="chart-label">{{ barra.dia }}</span>
+        </div>
+      </div>
+
+      <!-- Leyenda -->
+      <div style="display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--text-muted);">
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <div style="width: 8px; height: 8px; border-radius: 2px; background: var(--orange-bright);"></div>
+          Solicitudes
+        </div>
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <div style="width: 8px; height: 8px; border-radius: 2px; background: var(--teal);"></div>
+          Préstamos
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card__title">
+        <div class="chart-title-icon"><lucide-icon [img]="TrendingUp" size="16"></lucide-icon></div>
+        Tendencia mensual
+      </div>
+      <div class="chart-card__sub">Actividad últimas 4 semanas</div>
+
+      <div class="chart-line-area">
+        <svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%; height:100%;">
+          <path [attr.d]="trendArea" fill="rgba(253,190,17,0.18)"></path>
+          <path [attr.d]="trendPath"
+            fill="none" stroke="#FF9500" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+          </path>
+        </svg>
+      </div>
+
+      <div class="chart-x-labels">
+        <span *ngFor="let label of trendLabels">{{ label }}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Uso por dispositivo ── -->
+  <div class="chart-card">
+    <div class="card__header">
+      <div class="chart-card__title">
+        <div class="chart-title-icon"><lucide-icon [img]="Monitor" size="16"></lucide-icon></div>
+        Uso por dispositivo
+      </div>
+    </div>
+
+    <div *ngIf="dispositivos.length === 0"
+      style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04);
+             border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--text-secondary);">
+      <lucide-icon [img]="Info" size="16"></lucide-icon>
+      Aún no hay actividad suficiente para mostrar dispositivos.
+    </div>
+
+    <div *ngFor="let d of dispositivos" class="device-bar-item">
+      <div class="device-bar-item__color" [style.background]="d.color"></div>
+      <div class="device-bar-item__name">{{ d.nombre }}</div>
+      <div class="device-bar-item__bar-wrap">
+        <div class="device-bar-item__bar-fill"
+          [style.width.%]="d.porcentaje"
+          [style.background]="d.color">
+        </div>
+      </div>
+      <div class="device-bar-item__hours">{{ d.movimientos }} mov.</div>
+    </div>
+  </div>
+
+  <!-- ── Heatmap de actividad tipo GitHub ── -->
+  <div class="chart-card">
+    <div class="card__header">
+      <div class="chart-card__title">
+        <div class="chart-title-icon"><lucide-icon [img]="Activity" size="16"></lucide-icon></div>
+        Historial de actividad
+      </div>
+    </div>
+    <div class="chart-card__sub" style="margin-bottom: 14px;">Últimas 52 semanas · cada celda = un día</div>
+
+    <div class="heatmap-wrap">
+
+      <!-- Etiquetas de días (izquierda) -->
+      <div class="heatmap-days">
+        <span>Lun</span>
+        <span>Mié</span>
+        <span>Vie</span>
+      </div>
+
+      <!-- Grid del heatmap -->
+      <div class="heatmap-grid-wrap" style="overflow-x: auto;">
+
+        <!-- Etiquetas de meses (arriba) -->
+        <div class="heatmap-months" style="position: relative; height: 18px; margin-bottom: 4px;">
+          <span *ngFor="let m of heatmapMeses"
+            [style.left.px]="m.col * 13"
+            style="position: absolute; font-size: 11px; color: var(--text-muted); white-space: nowrap;">
+            {{ m.label }}
+          </span>
+        </div>
+
+        <!-- Grid: 7 filas × 52 columnas -->
+        <div class="heatmap-grid">
+          <div *ngFor="let fila of heatmap; let f = index" class="heatmap-row">
+            <div *ngFor="let celda of fila; let c = index"
+              class="heatmap-cell"
+              [style.background]="heatColor(celda.nivel)"
+              [title]="celda.fecha + ': ' + celda.valor + ' actividad(es)'">
+            </div>
+          </div>
+        </div>
+
+        <!-- Leyenda de intensidad -->
+        <div class="heatmap-legend">
+          <span style="font-size: 11px; color: var(--text-muted);">Menos</span>
+          <div class="heatmap-cell" [style.background]="heatColor(0)"></div>
+          <div class="heatmap-cell" [style.background]="heatColor(1)"></div>
+          <div class="heatmap-cell" [style.background]="heatColor(2)"></div>
+          <div class="heatmap-cell" [style.background]="heatColor(3)"></div>
+          <div class="heatmap-cell" [style.background]="heatColor(4)"></div>
+          <span style="font-size: 11px; color: var(--text-muted);">Más</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<ng-template #loadingTpl>
+  <div style="padding: 40px; text-align: center; color: var(--text-muted);">Cargando analíticos…</div>
+</ng-template>

@@ -1,0 +1,78 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">¡Hola, {{ nombreUsuario }}!</h1>
+    <p class="page-subtitle">
+      {{ usuarios.length > 0 ? 'Hay ' + usuarios.length + ' usuarios' : 'Cargando...' }}
+    </p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="tab-bar">
+    <button class="tab-pill" [class.active]="tabActivo === 'todos'"
+      (click)="cambiarTab('todos')">Todos</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'activo'"
+      (click)="cambiarTab('activo')">Activo</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'fuera'"
+      (click)="cambiarTab('fuera')">Fuera</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'suspendido'"
+      (click)="cambiarTab('suspendido')">Suspendido</button>
+    <button class="tab-pill" [class.active]="tabActivo === 'prestamo'"
+      (click)="cambiarTab('prestamo')">Prestamo</button>
+  </div>
+
+  @if (error) {
+    <div class="card" style="text-align: center; padding: 40px; color: var(--orange);">
+      No se pudo conectar con la API. Verifica que el backend esté corriendo.
+    </div>
+  } @else {
+    <div class="card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>ID</th>
+              <th>Estado</th>
+              <th>Programa</th>
+              <th>Último acceso</th>
+              <th>Último préstamo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (usuario of usuariosFiltrados; track usuario.id_usuario) {
+              <tr>
+                <td>
+                  <div class="cell-with-icon">
+                    <div class="cell-icon">
+                      <lucide-icon [img]="User" size="16"></lucide-icon>
+                    </div>
+                    {{ usuario.nombre_usuario }}
+                  </div>
+                </td>
+                <td class="text-muted">{{ usuario.id_usuario }}</td>
+                <td>
+                  <span [class]="obtenerClaseBadge(usuario.estado_usuario)">
+                    {{ obtenerTextoEstado(usuario.estado_usuario) }}
+                  </span>
+                </td>
+                <td>{{ usuario.programa }}</td>
+                <td class="text-muted">{{ obtenerUltimoAcceso(usuario.ultimo_acceso) }}</td>
+                <td class="text-muted fw-600">{{ getUltimoPrestamo(usuario.id_usuario) }}</td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  {{ cargando ? 'Cargando usuarios...' : 'No hay usuarios en esta categoría.' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+</div>

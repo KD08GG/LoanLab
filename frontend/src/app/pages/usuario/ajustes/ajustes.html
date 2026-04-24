@@ -1,0 +1,77 @@
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Ajustes</h1>
+    <p class="page-subtitle">Configura tus preferencias</p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <!-- Perfil -->
+  <div class="profile-hero">
+    <div class="profile-hero__avatar">{{ usuario?.nombre_usuario?.charAt(0)?.toUpperCase() || 'U' }}</div>
+    <div style="flex:1;">
+      <div class="profile-hero__name">{{ usuario?.nombre_usuario || 'Usuario' }}</div>
+      <div class="profile-hero__email">{{ usuario?.email || 'usuario@udlap.mx' }}</div>
+      <div class="profile-hero__meta">ID: {{ usuario?.id_usuario || 'N/A' }} · {{ usuario?.carrera || 'Ingeniería' }}</div>
+      <div class="profile-hero__stats">
+        <div class="profile-hero__stat">
+          <div class="profile-hero__stat-icon"><lucide-icon [img]="Clock" size="18"></lucide-icon></div>
+          <div>
+            <div class="profile-hero__stat-value">16.5h</div>
+            <div class="profile-hero__stat-label">Horas semana</div>
+          </div>
+        </div>
+        <div class="profile-hero__stat">
+          <div class="profile-hero__stat-icon"><lucide-icon [img]="Calendar" size="18"></lucide-icon></div>
+          <div>
+            <div class="profile-hero__stat-value">55.5h</div>
+            <div class="profile-hero__stat-label">Horas mes</div>
+          </div>
+        </div>
+        <div class="profile-hero__stat">
+          <div class="profile-hero__stat-icon"><lucide-icon [img]="Zap" size="18"></lucide-icon></div>
+          <div>
+            <div class="profile-hero__stat-value">5 días</div>
+            <div class="profile-hero__stat-label">Racha</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferencias -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">
+        <div class="card__title-icon"><lucide-icon [img]="SlidersHorizontal" size="16"></lucide-icon></div>
+        Preferencias del sistema
+      </div>
+    </div>
+    <div>
+      <div class="toggle-row">
+        <div class="toggle-row__info">
+          <div class="toggle-row__title">Notificaciones de solicitudes</div>
+          <div class="toggle-row__desc">Recibe alertas cuando tu solicitud sea aprobada o rechazada</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" [checked]="preferences.notificacionesSolicitudes" (change)="toggleNotificaciones()">
+          <span class="toggle__track"></span>
+          <span class="toggle__thumb"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-row__info">
+          <div class="toggle-row__title">Recordatorios de eventos</div>
+          <div class="toggle-row__desc">Recibe recordatorios 24h antes de cada reserva</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" [checked]="preferences.recordatoriosEventos" (change)="toggleRecordatorios()">
+          <span class="toggle__track"></span>
+          <span class="toggle__thumb"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
