@@ -14,22 +14,35 @@ Built as a Social Service project at UDLAP.
 ![Login](screenshots/login.png)
 
 ### Home — Admin
-![Home Admin](screenshots/home-admin.png)
+![Home Admin](screenshots/adminHome.png)
+![Home Admin](screenshots/adminHome2.png)
 
 ### Home — Usuario
-![Home Usuario](screenshots/home-usuario.png)
+![Home Usuario](screenshots/userHome.png)
 
 ### Solicitudes (Loan Requests)
-![Solicitudes](screenshots/solicitudes.png)
+![Solicitudes](screenshots/adminSolicitudes.png)
+![Solicitudes](screenshots/adminSolicitudes2.png)
 
-### Mis Dispositivos (My Devices)
-![Dispositivos](screenshots/dispositivos.png)
+![Solicitudes](screenshots/userSolicitudes.png)
+
+
+### Dispositivos (My Devices)
+![Dispositivos](screenshots/admInventario.png)
+![Dispositivos](screenshots/userDispositivos.png)
+ 
 
 ### Analíticos (Analytics)
-![Analiticos](screenshots/analiticos.png)
+![Analiticos](screenshots/adminAnaliticos.png)
+![Analiticos](screenshots/adminAnaliticos2.png)
+
 
 ### Eventos (Events)
-![Eventos](screenshots/eventos.png)
+![Eventos](screenshots/adminEventos.png)
+![Eventos](screenshots/adminEventos2.png)
+
+![Eventos](screenshots/userEventos.png)
+
 
 ---
 
